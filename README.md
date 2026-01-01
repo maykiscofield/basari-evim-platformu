@@ -1,73 +1,28 @@
-# Welcome to your Lovable project
+# 🚀 Başarı Evim - YKS Koçluk ve Mentorluk Platformu
 
-## Project info
+**Başarı Evim**, YKS hazırlık sürecindeki öğrencilerin hedeflerine daha emin adımlarla ulaşması için tasarlanmış, modern ve kullanıcı dostu bir koçluk platformudur.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## ✨ Özellikler
 
-## How can I edit this code?
+- **Bireysel Koçluk:** Her öğrenciye özel çalışma planları ve birebir takip.
+- **Haftalık Programlama:** Dinamik ve esnek çalışma takvimleri.
+- **Net Takibi:** TYT ve AYT gelişim süreçlerinin görselleştirilmesi.
+- **Modern Arayüz:** Göz yormayan, odaklanmayı artıran mor ve gold temalı tasarım.
 
-There are several ways of editing your application.
+## 🛠️ Kullanılan Teknolojiler
 
-**Use Lovable**
+Bu proje en güncel web teknolojileri kullanılarak geliştirilmiştir:
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- **React & TypeScript** - Güçlü ve güvenli uygulama yapısı.
+- **Vite** - Hızlı geliştirme ve performans.
+- **Tailwind CSS** - Modern ve duyarlı (responsive) tasarım.
+- **shadcn/ui** - Profesyonel bileşen kütüphanesi.
+- **Supabase** - Gerçek zamanlı veritabanı ve kullanıcı yönetimi.
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🚀 Yerel Kurulum
 
-**Use your preferred IDE**
+Projeyi kendi bilgisayarınızda çalıştırmak için:
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+1. Depoyu klonlayın:
+   ```bash
+   git clone [https://github.com/maykiscofield/basari-evim-platformu.git](https://github.com/maykiscofield/basari-evim-platformu.git)
