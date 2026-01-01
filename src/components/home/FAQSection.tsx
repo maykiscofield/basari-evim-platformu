@@ -35,11 +35,11 @@ const FAQSection = () => {
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
             <span className="text-foreground">Sıkça Sorulan </span>
-            <span className="bg-gradient-to-r from-primary to-purple-light bg-clip-text text-transparent">
+            <span className="text-primary font-extrabold inline-block drop-shadow-md">
               Sorular
             </span>
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-foreground max-w-2xl mx-auto">
             Merak ettiğiniz her şeyin cevabı burada. Başka sorularınız varsa bizimle iletişime geçin.
           </p>
         </div>

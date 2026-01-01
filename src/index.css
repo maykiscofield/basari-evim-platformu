@@ -102,8 +102,10 @@ All colors MUST be HSL.
 }
 
 @layer base {
+  /* Remove unintended global borders (causes thin white lines between elements).
+     Use box-sizing to avoid layout breakage instead. */
   * {
-    @apply border-border;
+    box-sizing: border-box;
   }
 
   body {

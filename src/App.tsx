@@ -1,3 +1,4 @@
+import Pomodoro from "./pages/Pomodoro";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +11,7 @@ import Auth from "./pages/Auth";
 import Services from "./pages/Services";
 import Cart from "./pages/Cart";
 import Dashboard from "./pages/Dashboard";
+import Iletisim from "./pages/Iletisim";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,7 +28,9 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/giris" element={<Auth />} />
               <Route path="/kayit" element={<Auth />} />
+              <Route path="/pomodoro" element={<Pomodoro />} />
               <Route path="/hizmetler" element={<Services />} />
+              <Route path="/iletisim" element={<Iletisim />} />
               <Route path="/sepet" element={<Cart />} />
               <Route path="/panel" element={<Dashboard />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

@@ -25,7 +25,6 @@ interface Package {
   image_url: string | null;
 }
 
-// Demo packages for initial display
 const demoPackages: Package[] = [
   {
     id: 'demo-1',
@@ -132,7 +131,6 @@ const Services = () => {
       }
     } catch (error) {
       console.error('Error fetching packages:', error);
-      // Keep demo packages on error
     } finally {
       setLoading(false);
     }
@@ -170,116 +168,114 @@ const Services = () => {
 
   return (
     <Layout>
-      <section className="py-12 bg-gradient-to-b from-muted/50 to-background">
+      {/* ARKA PLAN: 2. fotodaki aydınlık geçiş */}
+      <section className="py-20 bg-[#f4f4f5] dark:bg-slate-950 transition-colors duration-500">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-primary to-purple-light bg-clip-text text-transparent">
+          
+          {/* BAŞLIK: 2. fotodaki belirginlik */}
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter">
+              <span className="text-slate-900 dark:text-white drop-shadow-sm">
                 Hizmetlerimiz
               </span>
             </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-              YKS başarınız için ihtiyacınız olan tüm kaynaklar burada. 
-              Size en uygun paketi seçin.
+            <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-xl font-medium italic">
+              "YKS başarınız için ihtiyacınız olan her şey burada. Zırvalamadan hedefe odaklanın."
             </p>
           </div>
 
           <Tabs value={currentTab} onValueChange={(value) => setSearchParams({ type: value })} className="w-full">
-            <div className="flex justify-center mb-8">
-              <TabsList className="bg-muted">
-                <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Filter className="w-4 h-4 mr-2" />
-                  Tümü
+            <div className="flex justify-center mb-12">
+              <TabsList className="bg-slate-200/50 dark:bg-white/5 p-1 rounded-2xl h-auto">
+                <TabsTrigger value="all" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+                  <Filter className="w-4 h-4 mr-2" /> Tümü
                 </TabsTrigger>
-                <TabsTrigger value="coaching" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Users className="w-4 h-4 mr-2" />
-                  Koçluk
+                <TabsTrigger value="coaching" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+                  <Users className="w-4 h-4 mr-2" /> Koçluk
                 </TabsTrigger>
-                <TabsTrigger value="material" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  <Download className="w-4 h-4 mr-2" />
-                  Materyaller
+                <TabsTrigger value="material" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+                  <Download className="w-4 h-4 mr-2" /> Materyaller
                 </TabsTrigger>
               </TabsList>
             </div>
 
             <TabsContent value={currentTab}>
               {loading ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <div className="flex justify-center py-20">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
                 </div>
               ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
                   {filteredPackages.map((pkg) => (
-                    <Card key={pkg.id} className="flex flex-col border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl">
-                      <CardHeader>
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant={pkg.package_type === 'coaching' ? 'default' : 'secondary'}>
-                                {pkg.package_type === 'coaching' ? 'Koçluk' : 'Materyal'}
-                              </Badge>
-                              {pkg.is_subscription && (
-                                <Badge variant="outline" className="border-gold text-gold">
-                                  Abonelik
-                                </Badge>
-                              )}
-                              {pkg.available_slots !== null && pkg.available_slots <= 5 && (
-                                <Badge variant="destructive">
-                                  Son {pkg.available_slots} Kontenjan
-                                </Badge>
-                              )}
-                            </div>
-                            <CardTitle className="text-xl">{pkg.name}</CardTitle>
-                          </div>
+                    <Card key={pkg.id} className="group flex flex-col bg-white dark:bg-white/5 border-none rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden">
+                      
+                      <CardHeader className="p-8 pb-4">
+                        <div className="flex flex-wrap items-center gap-2 mb-4">
+                          <Badge className={`${pkg.package_type === 'coaching' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} hover:bg-opacity-100 border-none font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider`}>
+                            {pkg.package_type === 'coaching' ? 'Koçluk' : 'Materyal'}
+                          </Badge>
+                          {pkg.is_subscription && (
+                            <Badge className="bg-amber-100 text-amber-600 border-none font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider">
+                              Abonelik
+                            </Badge>
+                          )}
+                          {pkg.available_slots !== null && pkg.available_slots <= 5 && (
+                            <Badge variant="destructive" className="font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider animate-pulse">
+                              Son {pkg.available_slots} Kontenjan
+                            </Badge>
+                          )}
                         </div>
-                        <CardDescription className="text-sm">
+                        <CardTitle className="text-2xl font-black text-slate-800 dark:text-white group-hover:text-primary transition-colors tracking-tight">
+                          {pkg.name}
+                        </CardTitle>
+                        <CardDescription className="text-slate-500 dark:text-slate-400 font-medium text-base mt-2 line-clamp-2">
                           {pkg.description}
                         </CardDescription>
                       </CardHeader>
                       
-                      <CardContent className="flex-1">
-                        <ul className="space-y-2">
+                      <CardContent className="px-8 flex-1">
+                        <ul className="space-y-4">
                           {pkg.features.map((feature, idx) => (
-                            <li key={idx} className="flex items-center text-sm text-muted-foreground">
-                              <Check className="w-4 h-4 text-primary mr-2 flex-shrink-0" />
+                            <li key={idx} className="flex items-center text-sm font-bold text-slate-600 dark:text-slate-300">
+                              <div className="bg-purple-100 dark:bg-purple-900/30 p-1 rounded-full mr-3 flex-shrink-0">
+                                <Check className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                              </div>
                               {feature}
                             </li>
                           ))}
                         </ul>
                       </CardContent>
                       
-                      <CardFooter className="flex flex-col gap-4 pt-4 border-t border-border">
-                        <div className="flex items-baseline gap-2 w-full">
-                          <span className="text-3xl font-bold text-foreground">
+                      <CardFooter className="p-8 pt-0 flex flex-col gap-6 mt-4">
+                        <div className="flex items-baseline gap-2 w-full border-t border-slate-100 dark:border-white/5 pt-6">
+                          <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">
                             {formatPrice(pkg.price)}
                           </span>
                           {pkg.original_price && (
-                            <span className="text-lg text-muted-foreground line-through">
+                            <span className="text-lg text-slate-400 line-through font-bold">
                               {formatPrice(pkg.original_price)}
                             </span>
                           )}
                           {pkg.is_subscription && (
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-slate-500 font-bold text-sm">
                               /{pkg.subscription_interval === 'monthly' ? 'ay' : 'yıl'}
                             </span>
                           )}
                         </div>
                         
                         <Button 
-                          className="w-full bg-gradient-to-r from-primary to-purple-light hover:opacity-90"
+                          className={`w-full py-7 rounded-2xl font-black text-lg transition-all shadow-lg ${
+                            isInCart(pkg.id) 
+                            ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
+                            : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9] shadow-purple-500/20 hover:shadow-purple-500/40'
+                          }`}
                           onClick={() => handleAddToCart(pkg)}
                           disabled={isInCart(pkg.id)}
                         >
                           {isInCart(pkg.id) ? (
-                            <>
-                              <Check className="w-4 h-4 mr-2" />
-                              Sepette
-                            </>
+                            <><Check className="w-6 h-6 mr-2 stroke-[3px]" /> Sepette</>
                           ) : (
-                            <>
-                              <ShoppingCart className="w-4 h-4 mr-2" />
-                              Sepete Ekle
-                            </>
+                            <><ShoppingCart className="w-6 h-6 mr-2 stroke-[3px]" /> Sepete Ekle</>
                           )}
                         </Button>
                       </CardFooter>

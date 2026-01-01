@@ -1,106 +1,85 @@
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Instagram, Twitter, Youtube } from 'lucide-react';
+import { Mail, Phone, Instagram, ChevronRight } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-purple-dark text-white">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-gold to-gold-light flex items-center justify-center">
-                <span className="text-purple-dark font-bold text-lg">YKS</span>
-              </div>
-              <span className="font-bold text-xl">Koçluk</span>
-            </div>
-            <p className="text-white/70 text-sm">
-              YKS'de başarıya giden yolda yanınızdayız. Bireysel koçluk ve kaliteli materyallerle hedefinize ulaşın.
+    <footer className="relative bg-[#020617] pt-24 pb-12 overflow-hidden border-t border-white/5">
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+          
+          {/* LOGO ALANI */}
+          <div className="space-y-6">
+            <h3 className="text-4xl font-black text-white tracking-tighter italic">
+              YKS <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">KOÇLUK</span>
+            </h3>
+            <p className="text-[16px] text-slate-400 font-medium leading-relaxed max-w-xs">
+              YKS maratonunda zırvalamaya yer yok. <span className="text-white font-bold">Gerçek başarı</span> yanınızdayız.
             </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-white/70 hover:text-gold transition-colors">
-                <Instagram className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-white/70 hover:text-gold transition-colors">
-                <Twitter className="h-5 w-5" />
-              </a>
-              <a href="#" className="text-white/70 hover:text-gold transition-colors">
-                <Youtube className="h-5 w-5" />
-              </a>
+            <a href="https://www.instagram.com/ozgurkuzun" target="_blank" className="inline-block p-3 bg-white/5 border border-white/10 rounded-2xl hover:border-purple-500/50 transition-all">
+              <Instagram className="w-6 h-6 text-slate-400 hover:text-white" />
+            </a>
+          </div>
+
+          {/* BAĞLANTILI NAVİGASYON */}
+          <div>
+            <h4 className="text-[13px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+              NAVİGASYON
+            </h4>
+            <ul className="space-y-3"> {/* Boşluk düşürüldü */}
+              {['Ana Sayfa', 'Hizmetlerimiz', 'Hakkımızda', 'İletişim'].map((link) => (
+                <li key={link}>
+                  <Link to="#" className="group flex items-center text-[16px] text-slate-300 hover:text-purple-400 font-bold transition-all">
+                    {/* Bağlantı Belirteci */}
+                    <ChevronRight className="w-4 h-4 mr-2 opacity-0 -ml-6 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                    {link}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* BAĞLANTILI HİZMETLER */}
+          <div>
+            <h4 className="text-[13px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+              HİZMETLERİMİZ
+            </h4>
+            <ul className="space-y-3">
+              {['Bireysel Koçluk', 'Dijital Materyaller', 'Deneme Analizi', 'Tüm Paketler'].map((link) => (
+                <li key={link}>
+                  <Link to="#" className="group flex items-center text-[16px] text-slate-300 hover:text-blue-400 font-bold transition-all">
+                    <ChevronRight className="w-4 h-4 mr-2 opacity-0 -ml-6 group-hover:opacity-100 group-hover:ml-0 transition-all duration-300" />
+                    {link}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* BİZE ULAŞIN */}
+          <div>
+            <h4 className="text-[13px] font-black text-slate-500 uppercase tracking-[0.3em] mb-6">
+              BİZE ULAŞIN
+            </h4>
+            <div className="space-y-4">
+              <div className="group flex items-center gap-4 cursor-pointer">
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl group-hover:border-purple-500/50 transition-all">
+                  <Mail className="w-5 h-5 text-purple-400" />
+                </div>
+                <span className="text-[16px] text-slate-300 font-bold group-hover:text-white transition-colors">
+                  info@deneme.com
+                </span>
+              </div>
+              <div className="group flex items-center gap-4 cursor-pointer">
+                <div className="p-3 bg-white/5 border border-white/10 rounded-xl group-hover:border-blue-500/50 transition-all">
+                  <Phone className="w-5 h-5 text-blue-400" />
+                </div>
+                <span className="text-[16px] text-slate-300 font-bold group-hover:text-white transition-colors">
+                  +90 555 555 55 55
+                </span>
+              </div>
             </div>
           </div>
 
-          {/* Quick Links */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gold">Hızlı Bağlantılar</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-white/70 hover:text-white transition-colors">
-                  Ana Sayfa
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler" className="text-white/70 hover:text-white transition-colors">
-                  Hizmetlerimiz
-                </Link>
-              </li>
-              <li>
-                <Link to="/hakkimizda" className="text-white/70 hover:text-white transition-colors">
-                  Hakkımızda
-                </Link>
-              </li>
-              <li>
-                <Link to="/iletisim" className="text-white/70 hover:text-white transition-colors">
-                  İletişim
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Services */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gold">Hizmetler</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/hizmetler?type=coaching" className="text-white/70 hover:text-white transition-colors">
-                  Bireysel Koçluk
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler?type=material" className="text-white/70 hover:text-white transition-colors">
-                  Dijital Materyaller
-                </Link>
-              </li>
-              <li>
-                <Link to="/hizmetler" className="text-white/70 hover:text-white transition-colors">
-                  Tüm Paketler
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Contact */}
-          <div>
-            <h3 className="font-semibold text-lg mb-4 text-gold">İletişim</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center space-x-3 text-white/70">
-                <Mail className="h-5 w-5 text-gold" />
-                <span>info@ykskoculuk.com</span>
-              </li>
-              <li className="flex items-center space-x-3 text-white/70">
-                <Phone className="h-5 w-5 text-gold" />
-                <span>+90 555 123 45 67</span>
-              </li>
-              <li className="flex items-start space-x-3 text-white/70">
-                <MapPin className="h-5 w-5 text-gold mt-0.5" />
-                <span>İstanbul, Türkiye</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div className="border-t border-white/10 mt-8 pt-8 text-center text-white/50 text-sm">
-          <p>© {new Date().getFullYear()} YKS Koçluk. Tüm hakları saklıdır.</p>
         </div>
       </div>
     </footer>

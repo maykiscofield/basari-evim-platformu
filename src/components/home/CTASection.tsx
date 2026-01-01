@@ -4,36 +4,53 @@ import { Button } from '@/components/ui/button';
 
 const CTASection = () => {
   return (
-    <section className="py-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-primary via-purple-light to-primary" />
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyek0zNiAzMHYySDE0di0yaDIyem0wLTRWMjhIMTR2LTJoMjJ6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50" />
-      
+    <section className="py-28 relative overflow-hidden bg-background">
+      {/* Arka Plan ve Efektler - AYNI KALIYOR */}
+      <div className="absolute inset-0 bg-[#0f172a] dark:bg-slate-950" />
+      <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-primary/30 to-blue-900/40" />
+      <div className="absolute -top-24 -right-24 w-96 h-96 bg-purple-600/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-blue-600/20 rounded-full blur-[120px] animate-pulse" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+
       <div className="container mx-auto px-4 relative z-10">
-        <div className="max-w-3xl mx-auto text-center text-white">
-          <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full mb-6">
-            <Sparkles className="w-4 h-4 mr-2" />
-            <span className="text-sm font-medium">Sınırlı Kontenjan</span>
+        <div className="max-w-4xl mx-auto text-center">
+          
+          {/* SINIRLI KONTENJAN: Daha büyük, parlayan ve hareketli rozet */}
+          <div className="inline-flex items-center px-8 py-3 bg-gradient-to-r from-purple-600/10 to-purple-500/6 backdrop-blur-3xl border border-purple-500/30 rounded-full mb-12 shadow-[0_0_40px_rgba(168,85,247,0.35)] hover:shadow-[0_0_70px_rgba(168,85,247,0.7)] transition-all duration-500 group cursor-default transform hover:scale-105">
+            <div className="relative mr-4 flex items-center justify-center">
+              <div className="absolute -inset-2 rounded-full blur-xl bg-purple-600/30 opacity-60 animate-pulse" />
+              <Sparkles className="relative w-6 h-6 text-purple-300 animate-spin-slow" />
+            </div>
+            <span className="text-base md:text-lg lg:text-xl font-extrabold text-white uppercase tracking-widest drop-shadow-[0_0_18px_rgba(168,85,247,0.85)]">
+              Sınırlı Kontenjan
+            </span>
           </div>
           
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
+          {/* BAŞLIK: leading-tight ile satır arası açıldı */}
+          <h2 className="text-5xl md:text-7xl font-black mb-8 text-white leading-tight tracking-tight">
             Hayalinizdeki Üniversiteye
             <br />
-            <span className="text-gold">Bir Adım Daha Yakın Olun</span>
+            <span className="bg-gradient-to-r from-purple-400 via-fuchsia-300 to-blue-400 bg-clip-text text-transparent drop-shadow-[0_0_30px_rgba(192,132,252,0.4)]">
+              Bir Adım Daha Yakın Olun
+            </span>
           </h2>
           
-          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-            2025 YKS'ye hazırlık için şimdi harekete geçin. Erken kayıt indirimleri ve 
-            özel fırsatlar için hemen üye olun.
+          {/* Metin - AYNI KALIYOR */}
+          <p className="text-lg md:text-xl text-slate-300/90 mb-14 max-w-2xl mx-auto font-medium leading-relaxed">
+            2025 YKS hazırlığında zırvalamaya yer yok. <span className="text-white font-bold">Gerçek başarı</span> için şimdi harekete geçin.
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" asChild className="bg-gold text-purple-dark hover:bg-gold-light text-lg px-8">
-              <Link to="/kayit">
+          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+            {/* HEMEN BAŞLA: Güçlü Neon Gradyan ve Parlama */}
+            <Button size="lg" asChild className="group relative bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-lg px-12 py-8 rounded-2xl font-black transition-all duration-300 shadow-[0_0_30px_rgba(124,58,237,0.5)] hover:shadow-[0_0_60px_rgba(124,58,237,0.8)] border border-white/10">
+              <Link to="/kayit" className="flex items-center">
                 Hemen Başla
-                <ArrowRight className="ml-2 h-5 w-5" />
+                <ArrowRight className="ml-2 h-6 w-6 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
-            <Button size="lg" variant="outline" asChild className="border-white text-white hover:bg-white/10 text-lg px-8">
+
+            {/* PAKETLERİ İNCELE: Neon Kenarlık (Outline) ve Parlama */}
+            <Button size="lg" variant="outline" asChild className="border-2 border-purple-500/50 text-purple-300 bg-purple-500/5 hover:bg-purple-500/10 hover:border-purple-400 hover:text-white hover:shadow-[0_0_30px_rgba(168,85,247,0.4)] backdrop-blur-xl text-lg px-12 py-8 rounded-2xl font-bold transition-all duration-300">
               <Link to="/hizmetler">
                 Paketleri İncele
               </Link>
