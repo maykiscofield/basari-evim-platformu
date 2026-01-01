@@ -1,0 +1,112 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 270 20% 98%;
+    --foreground: 270 50% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 270 50% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 270 50% 10%;
+
+    --primary: 270 65% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 90% 55%;
+    --secondary-foreground: 270 50% 10%;
+
+    --muted: 270 15% 92%;
+    --muted-foreground: 270 20% 40%;
+
+    --accent: 45 90% 55%;
+    --accent-foreground: 270 50% 10%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 20% 88%;
+    --input: 270 20% 88%;
+    --ring: 270 65% 45%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 270 30% 12%;
+    --sidebar-foreground: 45 80% 85%;
+    --sidebar-primary: 45 90% 55%;
+    --sidebar-primary-foreground: 270 50% 10%;
+    --sidebar-accent: 270 30% 20%;
+    --sidebar-accent-foreground: 45 80% 85%;
+    --sidebar-border: 270 25% 22%;
+    --sidebar-ring: 45 90% 55%;
+
+    /* Custom tokens for YKS theme */
+    --gold: 45 90% 55%;
+    --gold-light: 45 85% 70%;
+    --gold-dark: 42 85% 42%;
+    --purple-light: 270 60% 65%;
+    --purple-dark: 270 70% 25%;
+  }
+
+  .dark {
+    --background: 270 30% 8%;
+    --foreground: 270 10% 95%;
+
+    --card: 270 30% 12%;
+    --card-foreground: 270 10% 95%;
+
+    --popover: 270 30% 12%;
+    --popover-foreground: 270 10% 95%;
+
+    --primary: 270 60% 60%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 45 85% 50%;
+    --secondary-foreground: 270 50% 10%;
+
+    --muted: 270 25% 18%;
+    --muted-foreground: 270 15% 60%;
+
+    --accent: 45 85% 50%;
+    --accent-foreground: 270 50% 10%;
+
+    --destructive: 0 62.8% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 270 25% 20%;
+    --input: 270 25% 20%;
+    --ring: 270 60% 60%;
+
+    --sidebar-background: 270 35% 6%;
+    --sidebar-foreground: 45 80% 85%;
+    --sidebar-primary: 45 85% 50%;
+    --sidebar-primary-foreground: 270 50% 10%;
+    --sidebar-accent: 270 30% 15%;
+    --sidebar-accent-foreground: 45 80% 85%;
+    --sidebar-border: 270 25% 15%;
+    --sidebar-ring: 45 85% 50%;
+
+    --gold: 45 85% 50%;
+    --gold-light: 45 80% 65%;
+    --gold-dark: 42 80% 38%;
+    --purple-light: 270 55% 70%;
+    --purple-dark: 270 65% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
