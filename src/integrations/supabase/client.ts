@@ -1,17 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types' // Bu satırın varlığından emin ol
+import type { Database } from './types'
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY
+// Değişkenleri alırken tırnaklardan veya boşluklardan arındıralım
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+
+// Eğer değerler yoksa boş string yerine uyarı verelim
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error("Vercel'den anahtarlar çekilemedi!");
+}
 
 export const supabase = createClient<Database>(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true,
-    },
-  }
+  supabaseUrl || "", 
+  supabaseAnonKey || ""
 )
