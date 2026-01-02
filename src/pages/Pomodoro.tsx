@@ -1,197 +1,223 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Layout from '../components/layout/Layout';
-import { Play, Pause, RotateCcw, Square } from "lucide-react"; 
+import { Play, Pause, RotateCcw, X, TrendingUp, Trophy, Crown, Zap } from "lucide-react"; 
+import { Button } from '@/components/ui/button'; 
+import { supabase } from '@/integrations/supabase/client'; 
+import { toast } from "sonner"; 
+import confetti from 'canvas-confetti';
 
 const Pomodoro = () => {
-  // --- STATE'LER ---
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [timeLeft, setTimeLeft] = useState(25 * 60); 
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
   const [targetMinutes, setTargetMinutes] = useState(300);
   const [isZirvaPlaying, setIsZirvaPlaying] = useState(false);
   const [rastgeleSoz, setRastgeleSoz] = useState("");
+  const [isLegendary, setIsLegendary] = useState(false); 
   
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const successAudioRef = useRef<HTMLAudioElement | null>(null);
   const playlistId = '7DaKTQA8ETlVUUKMRcSmK6';
 
   const celalSozleri = [
-    "Zırvalama, ders çalış!",
-    "Bilgi güçtür, gerisi safsatadır.",
-    "Cehalet mazeret değildir, odaklan!",
-    "Masa başında zırvalanmaz, öğrenilir.",
-    "Senin cahilliğin benim yaşamımı etkiliyor!",
-    "Okumayan adam cahil kalır, dersine dön!"
+    "Zırvalama, ders çalış!", "Bilgi güçtür, gerisi safsatadır.", 
+    "Senin cahilliğin benim yaşamımı etkiliyor!", "Okumayan adam cahil kalır!"
   ];
 
   useEffect(() => {
-    setRastgeleSoz(celalSozleri[Math.floor(Math.random() * celalSozleri.length)]);
+    successAudioRef.current = new Audio('/applepay.mp3');
     const storedTotal = localStorage.getItem('totalWorkMinutes');
     if (storedTotal) setTotalWorkMinutes(parseInt(storedTotal));
   }, []);
 
-  // --- SES FONKSİYONU (DURDURMA DESTEKLİ) ---
+  // --- ULTRA MODERN NEON BİLDİRİM (TAMAMEN YENİLENDİ) ---
+  const showAdvancedXPToast = (puan: number, oldPercent: number, newPercent: number, legendary: boolean) => {
+    toast.custom((t: any) => (
+      <div className={`relative group overflow-hidden bg-[#0a0f1e]/95 backdrop-blur-3xl border-[3px] p-1.5 rounded-[3rem] transition-all duration-700 max-w-[600px] w-full pointer-events-auto
+        ${legendary
+          ? 'border-yellow-500/80 shadow-[0_0_80px_rgba(251,191,36,0.5),_inset_0_0_30px_rgba(251,191,36,0.2)]'
+          : 'border-[#bc13fe]/80 shadow-[0_0_80px_rgba(188,19,254,0.5),_inset_0_0_30px_rgba(188,19,254,0.2)]'
+        }
+        ${t.visible ? 'animate-in fade-in slide-in-from-bottom-10 zoom-in-95' : 'animate-out fade-out zoom-out-95 duration-500'}`}>
+        
+        {/* Hareketli Arka Plan Işıkları */}
+        <div className={`absolute -top-20 -left-20 w-60 h-60 rounded-full blur-[120px] opacity-40 animate-pulse ${legendary ? 'bg-yellow-600' : 'bg-[#bc13fe]'}`}></div>
+        <div className={`absolute -bottom-20 -right-20 w-60 h-60 rounded-full blur-[120px] opacity-40 animate-pulse ${legendary ? 'bg-orange-600' : 'bg-blue-600'}`}></div>
+
+        <div className="relative z-10 p-8 flex items-center gap-10 text-left">
+          {/* Sol: Dev İkon Alanı */}
+          <div className="flex-shrink-0 relative">
+            <div className={`absolute inset-0 blur-3xl opacity-70 animate-pulse ${legendary ? 'bg-yellow-500' : 'bg-[#bc13fe]'}`}></div>
+            <div className={`p-6 rounded-[2rem] relative z-10 shadow-2xl border-2 border-white/20 bg-gradient-to-br ${legendary ? 'from-yellow-400 via-amber-500 to-orange-600' : 'from-[#bc13fe] via-purple-500 to-blue-600'}`}>
+              {legendary ? <Crown className="w-14 h-14 text-white drop-shadow-lg" /> : <Trophy className="w-14 h-14 text-white drop-shadow-lg" />}
+            </div>
+          </div>
+
+          {/* Sağ: Devasa XP ve İlerleme */}
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-3 mb-3">
+              <Zap className={`w-6 h-6 animate-pulse ${legendary ? 'text-yellow-400' : 'text-[#bc13fe]'}`} />
+              <h3 className="text-sm font-black text-white italic tracking-[0.3em] uppercase opacity-90">
+                {legendary ? 'EFSANEVİ BAŞARI!' : 'İLERLEME KAYDEDİLDİ'}
+              </h3>
+            </div>
+            
+            <div className="flex items-center gap-8">
+              {/* DEVASA XP SAYISI */}
+              <span className={`text-8xl font-black whitespace-nowrap leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b 
+                ${legendary ? 'from-yellow-300 to-amber-600 drop-shadow-[0_0_30px_#fbbf24]' : 'from-white to-[#bc13fe] drop-shadow-[0_0_30px_#bc13fe]'}`}>
+                +{puan}
+              </span>
+              
+              <div className="flex flex-col justify-center flex-1">
+                <span className="text-white font-black text-3xl italic leading-none mb-3">XP</span>
+                {/* RÜTBE İLERLEME ÇUBUĞU */}
+                <div className="relative h-6 bg-black/50 rounded-full border border-white/10 overflow-hidden shadow-inner min-w-[180px]">
+                  <div className={`absolute inset-y-0 left-0 transition-all duration-1000 ease-out
+                    ${legendary ? 'bg-gradient-to-r from-yellow-400 to-amber-600' : 'bg-gradient-to-r from-[#bc13fe] to-blue-600'}`}
+                    style={{ width: `${newPercent}%` }}>
+                    <div className="absolute inset-0 bg-white/20 animate-shine"></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-black uppercase tracking-widest text-white z-10">
+                    <span>% {oldPercent}</span>
+                    <span>→</span>
+                    <span>% {newPercent}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button onClick={() => toast.dismiss(t)} className="flex-shrink-0 self-start -mt-2 -mr-2 p-2 text-white/50 hover:text-white transition-all rounded-full hover:bg-white/10">
+            <X size={28} />
+          </button>
+        </div>
+      </div>
+    ), { duration: 8000, position: 'bottom-right' });
+  };
+
+  const saveSessionToSupabase = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data: sessions } = await (supabase as any).from('pomodoro_sessions').select('score').eq('user_id', user.id);
+      const totalScoreOld = sessions?.reduce((sum: number, s: any) => sum + s.score, 0) || 0;
+      const oldPercent = Math.floor((totalScoreOld / 2500) * 100);
+
+      await (supabase as any).from('pomodoro_sessions').insert([{ 
+        user_id: user.id, first_name: user.user_metadata?.full_name?.split(" ")[0] || "Öğrenci", score: 25, status: 'Tamamlandı' 
+      }]);
+
+      const newPercent = Math.floor(((totalScoreOld + 25) / 2500) * 100);
+      const legendary = (totalScoreOld + 25) >= 2500;
+      setIsLegendary(legendary);
+      showAdvancedXPToast(25, oldPercent, newPercent, legendary);
+      successAudioRef.current?.play().catch(() => {});
+      confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: legendary ? ['#fbbf24', '#f59e0b', '#ffffff'] : ['#bc13fe', '#00d4ff', '#ffffff'] });
+    } catch (e) { console.error(e); }
+  };
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive && timeLeft > 0) {
+      interval = setInterval(() => setTimeLeft((p) => p - 1), 1000);
+    } else if (timeLeft === 0 && isActive) {
+      if (!isBreak) {
+        saveSessionToSupabase();
+        setTotalWorkMinutes(prev => {
+          const newVal = prev + 25;
+          localStorage.setItem('totalWorkMinutes', newVal.toString());
+          return newVal;
+        });
+      }
+      setIsActive(false);
+      const nextIsBreak = !isBreak;
+      setIsBreak(nextIsBreak);
+      setTimeLeft(nextIsBreak ? 5 * 60 : 25 * 60);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, timeLeft, isBreak]);
+
   const playZirva = useCallback(() => {
+    const audio = new Audio('/zirva.mp3');
     if (isZirvaPlaying && audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
       setIsZirvaPlaying(false);
       return;
     }
-
-    const audioUrl = `${window.location.origin}/zirva.mp3?v=${new Date().getTime()}`;
-    const audio = new Audio(audioUrl);
     audioRef.current = audio;
-
     setIsZirvaPlaying(true);
     audio.play().catch(() => setIsZirvaPlaying(false));
     audio.onended = () => setIsZirvaPlaying(false);
   }, [isZirvaPlaying]);
 
-  // --- SAYAÇ MANTIĞI ---
-  useEffect(() => {
-    let interval: any = null;
-    if (isActive && timeLeft > 0) {
-      interval = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-        if (!isBreak && timeLeft % 60 === 0 && timeLeft !== 25 * 60) {
-           setTotalWorkMinutes(prev => {
-             const newVal = prev + 1;
-             localStorage.setItem('totalWorkMinutes', newVal.toString());
-             return newVal;
-           });
-         }
-      }, 1000);
-    } else if (timeLeft === 0 && isActive) {
-      setIsActive(false);
-      setIsBreak(!isBreak);
-      setTimeLeft(!isBreak ? 5 * 60 : 25 * 60);
-    }
-    return () => clearInterval(interval);
-  }, [isActive, timeLeft, isBreak]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const progressPercent = Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100);
-
   return (
     <Layout>
-      <div className={`min-h-screen transition-all duration-1000 flex flex-col items-center py-12 px-4 relative overflow-hidden ${isBreak ? 'bg-slate-950' : 'bg-[#0f172a]'}`}>
-        
-        {/* Neon Glow Arka Plan Efektleri */}
-        <div className={`absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[120px] opacity-30 animate-pulse ${isBreak ? 'bg-emerald-500' : 'bg-purple-600'}`}></div>
-        <div className={`absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full blur-[120px] opacity-30 animate-pulse ${isBreak ? 'bg-cyan-500' : 'bg-blue-600'}`}></div>
-
-        <div className="max-w-7xl w-full relative z-10">
-          <div className="text-center mb-16">
-            <h1 className="text-7xl font-black mb-8 tracking-tighter text-white drop-shadow-[0_0_25px_rgba(255,255,255,0.2)] uppercase italic">
-              {isBreak ? 'MOLA ZAMANI' : 'ODAKLANMA'}
-            </h1>
-            
-            {/* İstatistik Panelleri */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-               <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center min-h-[200px]">
-                 <span className="text-purple-400 text-xs font-black uppercase tracking-[0.3em] mb-4 text-center">Odaklanma</span>
-                 <div className="text-center text-white italic">
-                   <span className="text-6xl font-black">{Math.floor(totalWorkMinutes / 60)}</span><span className="text-xl opacity-50">sa</span>
-                   <span className="mx-2 text-4xl opacity-30">:</span>
-                   <span className="text-6xl font-black">{totalWorkMinutes % 60}</span><span className="text-xl opacity-50">dk</span>
-                 </div>
-               </div>
-               
-               <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center min-h-[200px]">
-                 <span className="text-blue-400 text-xs font-black uppercase tracking-[0.3em] mb-4 text-center">Günlük Hedef</span>
-                 <div className="flex items-center justify-center gap-2">
-                   <input type="number" value={targetMinutes} onChange={(e) => setTargetMinutes(parseInt(e.target.value) || 0)} className="bg-transparent w-32 text-center text-6xl font-black text-white outline-none border-b-2 border-white/20 focus:border-blue-500 transition-colors" />
-                   <span className="text-2xl text-white/40 font-bold mt-4">dk</span>
-                 </div>
-               </div>
-
-               <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center min-h-[200px]">
-                 <span className="text-pink-400 text-xs font-black uppercase tracking-[0.3em] mb-4 text-center">Başarı Oranı</span>
-                 <div className="text-center">
-                   <span className="text-6xl font-black text-white drop-shadow-[0_0_15px_rgba(236,72,153,0.5)]">%{progressPercent}</span>
-                 </div>
-                 <div className="w-full bg-white/10 h-4 rounded-full mt-6 overflow-hidden">
-                   <div className={`h-full rounded-full bg-gradient-to-r ${isBreak ? 'from-emerald-400 to-cyan-400' : 'from-pink-600 to-purple-500'}`} style={{ width: `${progressPercent}%` }} />
-                 </div>
-               </div>
+      <div className={`min-h-screen py-12 px-4 relative overflow-hidden transition-all duration-1000 ${isLegendary ? 'bg-[#0f0a00]' : 'bg-[#0f172a]'}`}>
+        <div className={`absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[150px] opacity-30 animate-pulse ${isLegendary ? 'bg-yellow-600' : 'bg-[#bc13fe]'}`}></div>
+        <div className="max-w-7xl w-full mx-auto relative z-10 text-white text-center">
+          <h1 className="text-7xl font-black mb-16 tracking-tighter italic uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.2)]">
+            {isBreak ? 'MOLA' : 'ODAKLANMA'}
+          </h1>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center h-[220px] shadow-2xl">
+              <span className={`${isLegendary ? 'text-yellow-500' : 'text-[#bc13fe]'} text-[10px] font-black uppercase tracking-[0.4em] mb-4`}>Odaklanma</span>
+              <div className="text-6xl font-black italic">{Math.floor(totalWorkMinutes / 60)}<span className="text-xl opacity-40 ml-1">sa</span> : {totalWorkMinutes % 60}<span className="text-xl opacity-40 ml-1">dk</span></div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center h-[220px] shadow-2xl">
+              <span className="text-blue-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Günlük Hedef</span>
+              <div className="flex items-center justify-center">
+                <input type="number" value={targetMinutes} onChange={(e) => setTargetMinutes(parseInt(e.target.value) || 0)} className="bg-transparent text-6xl font-black text-center w-32 outline-none border-b-2 border-white/10 focus:border-[#bc13fe] transition-all" />
+                <span className="text-2xl opacity-40 font-bold ml-2 mt-4">dk</span>
+              </div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-[2.5rem] flex flex-col justify-center h-[220px] shadow-2xl">
+              <span className="text-pink-400 text-[10px] font-black uppercase tracking-[0.4em] mb-4">Başarı Oranı</span>
+              <div className="text-6xl font-black mb-6">%{Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100)}</div>
+              <div className="w-full bg-white/5 h-4 rounded-full overflow-hidden">
+                <div className={`h-full transition-all duration-1000 ${isLegendary ? 'bg-gradient-to-r from-yellow-400 to-amber-600 shadow-[0_0_15px_#fbbf24]' : 'bg-gradient-to-r from-[#bc13fe] to-pink-500 shadow-[0_0_15px_#bc13fe]'}`} style={{ width: `${Math.min((totalWorkMinutes/targetMinutes)*100, 100)}%` }}></div>
+              </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch">
-            {/* SOL SÜTUN */}
-            <div className="flex flex-col gap-10">
-              <div className="p-1 rounded-[3rem] bg-gradient-to-b from-purple-500/50 to-transparent shadow-2xl h-[550px]">
-                <div className="bg-[#0f172a] p-4 rounded-[2.9rem] overflow-hidden h-full">
-                  <div className="relative h-full rounded-[2rem] overflow-hidden bg-slate-900 group">
-                    <img src={isActive ? "/celal-hoca-gulen.jpg" : "/celal.jpg"} alt="Celal Şengör" className="w-full h-full object-cover" />
-                    <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent text-center">
-                        <p className="text-yellow-400 font-bold text-xl italic drop-shadow-md">{rastgeleSoz}</p>
-                    </div>
-                  </div>
-                </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div className="space-y-10 text-left">
+              <div className="bg-white/5 backdrop-blur-xl rounded-[3.5rem] p-1 border border-white/10 h-[550px] overflow-hidden shadow-2xl relative group">
+                <img src="/celal.jpg" alt="Celal" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] opacity-80"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-10 text-center text-yellow-400 font-bold text-2xl italic leading-tight">"Bilgi güçtür, gerisi safsatadır."</div>
               </div>
-
-              {/* MODERN NEON SAYAÇ */}
-              <div className={`relative p-[3px] rounded-[3.5rem] h-[400px] transition-all duration-700 bg-gradient-to-br ${isActive ? 'from-rose-500 via-purple-500 to-blue-500 animate-pulse' : 'from-slate-700 to-slate-800'}`}>
-                <div className="bg-[#0f172a] h-full w-full rounded-[3.3rem] flex flex-col items-center justify-center relative z-10 overflow-hidden">
-                  <div className={`text-[10rem] leading-none font-mono font-black italic tracking-tighter mb-8 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] text-white`}>
-                    {formatTime(timeLeft)}
-                  </div>
-                  <div className="flex gap-6 w-full px-12">
-                    <button onClick={() => setIsActive(!isActive)} className={`flex-[3] py-8 rounded-3xl font-black text-2xl uppercase transition-all transform active:scale-95 flex items-center justify-center gap-4 ${isActive ? 'bg-rose-600 text-white shadow-rose-900/50' : 'bg-white text-slate-950'}`}>
-                      {isActive ? <Pause size={28}/> : <Play size={28}/>} {isActive ? 'DURAKLAT' : 'ODAKLAN'}
-                    </button>
-                    <button onClick={() => { setIsActive(false); setTimeLeft(25*60); }} className="flex-1 py-8 bg-white/5 text-white rounded-3xl font-bold border border-white/10 hover:bg-white/10 flex items-center justify-center">
-                      <RotateCcw size={32} />
-                    </button>
-                  </div>
+              <div className="bg-[#0f172a] rounded-[4.5rem] p-12 border border-white/5 shadow-2xl flex flex-col items-center">
+                <div className="text-[12rem] font-mono font-black italic tracking-tighter leading-none mb-12 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                  {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+                </div>
+                <div className="flex gap-6 w-full px-4">
+                  <Button onClick={() => setIsActive(!isActive)} className={`flex-[3] py-14 rounded-[2.5rem] font-black text-4xl uppercase tracking-wider transition-all duration-300 border-2 relative overflow-hidden group/btn ${isLegendary ? 'bg-gradient-to-br from-yellow-400 to-amber-600 border-yellow-300 text-black shadow-[0_0_40px_#fbbf2499]' : 'bg-gradient-to-br from-[#bc13fe] to-[#8a2be2] border-[#d946ef] text-white shadow-[0_0_40px_#bc13fe99]'}`}>
+                    <div className="absolute inset-0 bg-white/20 skew-x-12 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-700"></div>
+                    <div className="relative z-10 flex items-center justify-center">
+                      {isActive ? <Pause size={44} className="mr-4" /> : <Play size={44} className="mr-4 fill-current" />}
+                      {isActive ? 'DURAKLAT' : 'ODAKLAN'}
+                    </div>
+                  </Button>
+                  <Button onClick={() => {setIsActive(false); setTimeLeft(25*60);}} className={`flex-1 py-14 rounded-[2.5rem] border-2 bg-white/5 hover:bg-white/10 group/reset ${isLegendary ? 'border-yellow-500/50 text-yellow-500' : 'border-[#bc13fe]/50 text-[#bc13fe]'}`}>
+                    <RotateCcw size={44} className="group-hover/reset:-rotate-90 transition-transform duration-500" />
+                  </Button>
                 </div>
               </div>
             </div>
-
-            {/* SAĞ SÜTUN */}
-            <div className="flex flex-col gap-10">
-              {/* SPOTIFY PANELI (Düzeltildi) */}
-              <div className="bg-slate-950/50 rounded-[3rem] shadow-2xl overflow-hidden border border-white/10 p-8 flex flex-col h-[550px] backdrop-blur-xl">
-                <div className="flex-1 rounded-[2.5rem] overflow-hidden bg-black border border-white/5 shadow-2xl">
-                  <iframe 
-                    src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} 
-                    width="100%" 
-                    height="100%" 
-                    frameBorder="0" 
-                    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-                  ></iframe>
-                </div>
+            
+            <div className="space-y-10">
+              <div className="bg-black/40 backdrop-blur-md rounded-[3.5rem] h-[550px] overflow-hidden border border-white/5 shadow-2xl">
+                <iframe src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
               </div>
-
-              {/* GÜNLÜK DOZ (Ses Durdurma Özellikli) */}
-              <div 
-                className={`group relative overflow-hidden p-[2px] rounded-[3.5rem] transition-all duration-500 h-[400px] flex items-center
-                  ${isZirvaPlaying ? 'bg-gradient-to-br from-red-600 via-rose-700 to-red-900' : 'bg-gradient-to-br from-yellow-500 via-orange-600 to-red-600 shadow-[0_0_40px_rgba(234,179,8,0.2)] cursor-pointer active:scale-95'}`}
-                onClick={playZirva}
-              >
-                <div className={`h-full w-full backdrop-blur-3xl p-10 rounded-[calc(3.5rem-2px)] flex flex-col items-center justify-center border border-white/5 text-center relative overflow-hidden transition-colors duration-500
-                  ${isZirvaPlaying ? 'bg-red-950/40' : 'bg-[#0f172a]/95'}`}>
-                  
-                  <span className={`text-xs font-black uppercase tracking-[0.4em] mb-4 relative z-10 w-full block
-                    ${isZirvaPlaying ? 'text-red-400 animate-pulse' : 'text-yellow-500'}`}>
-                    {isZirvaPlaying ? 'CELAL HOCA KONUŞUYOR...' : 'GÜNLÜK DOZ'}
-                  </span>
-                  
-                  <div className="relative z-10 space-y-4">
-                    <h2 className={`text-6xl font-black italic tracking-tighter transition-all duration-500 ${isZirvaPlaying ? 'text-red-200' : 'text-white'}`}>ZIRVALAMA!</h2>
-                    <div className={`h-1 mx-auto rounded-full transition-all duration-500 ${isZirvaPlaying ? 'w-48 bg-red-500' : 'w-16 bg-yellow-500 group-hover:w-32'}`} />
-                  </div>
-
-                  <div className={`mt-8 p-6 rounded-full border transition-all duration-500
-                    ${isZirvaPlaying ? 'bg-red-600 border-red-400 text-white shadow-[0_0_30px_rgba(220,38,38,0.6)]' : 'bg-yellow-500/10 border-yellow-500/20 text-yellow-500 group-hover:bg-yellow-500 group-hover:text-[#0f172a]'}`}>
-                    {isZirvaPlaying ? <Square size={40} fill="currentColor" /> : <Play size={40} fill="currentColor" />}
+              <div className={`group relative h-[450px] p-[2px] rounded-[4rem] cursor-pointer transition-all active:scale-95 ${isLegendary ? 'bg-yellow-500 shadow-yellow-500/50' : 'bg-gradient-to-br from-yellow-400 via-[#bc13fe] to-red-500 animate-pulse'}`} onClick={playZirva}>
+                <div className="h-full w-full bg-[#0f172a] rounded-[calc(4rem-2px)] flex flex-col items-center justify-center p-12 text-center relative z-10 overflow-hidden">
+                  <span className="text-yellow-400 font-black text-sm tracking-[0.5em] mb-6 uppercase">Günlük Doz</span>
+                  <h2 className="text-7xl font-black italic tracking-tighter mb-10">ZIRVALAMA!</h2>
+                  <div className={`p-10 rounded-full transition-all duration-500 shadow-2xl bg-white/5 border border-white/10 ${isLegendary ? 'group-hover:bg-yellow-500 group-hover:text-black' : 'group-hover:bg-[#bc13fe]'}`}>
+                    <Play size={64} fill="white" className="ml-2" />
                   </div>
                 </div>
               </div>

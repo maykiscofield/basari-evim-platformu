@@ -1,371 +1,112 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  BookOpen, Award, TrendingUp, Download, Settings, 
-  ChevronRight, Trophy, Target, Clock, Star 
-} from 'lucide-react';
+import { Award, TrendingUp, Star, Trophy, Crown } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import SuccessTable from '@/components/SuccessTable';
-
-interface Profile {
-  id: string;
-  full_name: string | null;
-  email: string | null;
-}
-
-interface UserProgress {
-  id: string;
-  category: string;
-  topic: string;
-  progress_value: number;
-}
-
-interface UserBadge {
-  id: string;
-  earned_at: string;
-  badge: {
-    id: string;
-    name: string;
-    description: string | null;
-    icon: string;
-  };
-}
-
-interface Purchase {
-  id: string;
-  is_active: boolean;
-  package: {
-    id: string;
-    name: string;
-    package_type: string;
-  };
-}
+import WeeklyChart from '@/components/WeeklyChart';
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [progress, setProgress] = useState<UserProgress[]>([]);
-  const [badges, setBadges] = useState<UserBadge[]>([]);
-  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [profile, setProfile] = useState<any>(null);
+  const [totalScore, setTotalScore] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  // --- EFSANEVİ MOD KONTROLÜ ---
+  const isLegendary = totalScore >= 2500;
+  const themeColor = isLegendary ? '#fbbf24' : '#bc13fe'; // Altın vs Mor
+
   useEffect(() => {
-    if (!authLoading && !user) {
-      navigate('/giris');
-    }
+    if (!authLoading && !user) navigate('/giris');
   }, [user, authLoading, navigate]);
 
   useEffect(() => {
     if (user) {
       fetchDashboardData();
+
+      // --- 2. İSTEK: REAL-TIME (ANLIK) GÜNCELLEME ---
+      const channel = supabase
+        .channel('dashboard-updates')
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'pomodoro_sessions', filter: `user_id=eq.${user.id}` },
+          () => {
+            console.log('Puan artışı algılandı!');
+            fetchDashboardData(); // Sayfayı yenilemeden verileri tekrar çeker
+          }
+        )
+        .subscribe();
+
+      return () => { supabase.removeChannel(channel); };
     }
   }, [user]);
 
   const fetchDashboardData = async () => {
     if (!user) return;
-
     try {
-      // Profil verilerini çekme
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .maybeSingle();
-
-      if (profileData) {
-        setProfile(profileData);
-      }
-
-      // İlerleme verilerini çekme
-      const { data: progressData } = await supabase
-        .from('user_progress')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (progressData) {
-        setProgress(progressData);
-      }
-
-      // Rozet verilerini çekme
-      const { data: badgesData } = await supabase
-        .from('user_badges')
-        .select(`
-          id,
-          earned_at,
-          badge:badges (
-            id,
-            name,
-            description,
-            icon
-          )
-        `)
-        .eq('user_id', user.id);
-
-      if (badgesData) {
-        setBadges(badgesData as unknown as UserBadge[]);
-      }
-
-      // Satın alımları çekme
-      const { data: purchasesData } = await supabase
-        .from('user_purchases')
-        .select(`
-          id,
-          is_active,
-          package:packages (
-            id,
-            name,
-            package_type
-          )
-        `)
-        .eq('user_id', user.id)
-        .eq('is_active', true);
-
-      if (purchasesData) {
-        setPurchases(purchasesData as unknown as Purchase[]);
-      }
-    } catch (error) {
-      console.error('Dashboard error:', error);
-    } finally {
-      setLoading(false);
-    }
+      const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      const { data: sessions } = await (supabase as any).from('pomodoro_sessions').select('score').eq('user_id', user.id);
+      setProfile(prof);
+      setTotalScore(sessions?.reduce((sum: number, s: any) => sum + s.score, 0) || 0);
+    } catch (e) { console.error(e); } finally { setLoading(false); }
   };
 
-  const getOverallProgress = () => {
-    if (progress.length === 0) return 0;
-    const total = progress.reduce((sum, p) => sum + p.progress_value, 0);
-    return Math.round(total / progress.length);
-  };
-
-  if (authLoading || loading) {
-    return (
-      <Layout>
-        <div className="min-h-[60vh] flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-        </div>
-      </Layout>
-    );
-  }
-
-  if (!user) return null;
+  if (authLoading || loading) return (
+    <Layout><div className="min-h-[60vh] flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div></Layout>
+  );
 
   return (
     <Layout>
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">
-            Hoş Geldin, <span className="text-primary">{profile?.full_name || 'Öğrenci'}</span>!
-          </h1>
-          <p className="text-muted-foreground">
-            YKS yolculuğundaki ilerlemenizi buradan takip edebilirsiniz.
-          </p>
+      <div className={`container mx-auto px-4 py-8 transition-all duration-1000 ${isLegendary ? 'bg-[#0f0a00]' : ''}`}>
+        <div className="mb-8 flex justify-between items-end">
+          <div>
+            <h1 className="text-3xl font-bold mb-2 text-white text-left">
+              Hoş Geldin, <span style={{ color: themeColor }}>{profile?.full_name || 'Öğrenci'}</span>!
+              {isLegendary && <Crown className="inline-block ml-3 text-yellow-500 animate-bounce" size={28} />}
+            </h1>
+            <p className="text-muted-foreground italic tracking-tight">"Bilgi güçtür, gerisi safsatadır."</p>
+          </div>
+          {isLegendary && <div className="bg-yellow-500/10 border border-yellow-500/50 px-4 py-1 rounded-full text-[10px] font-black text-yellow-500 animate-pulse tracking-widest">EFSANEVİ MOD</div>}
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <Card className="border-border">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Genel İlerleme</p>
-                  <p className="text-2xl font-bold text-primary">%{getOverallProgress()}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-primary" />
-                </div>
+        {/* Rütbe Kartı - Dinamik Renk */}
+        <Card className={`mb-8 transition-all duration-1000 border-2 ${isLegendary ? 'border-yellow-500/40 shadow-[0_0_30px_rgba(251,191,36,0.1)]' : 'border-[#bc13fe]/30'}`}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-black italic uppercase tracking-widest flex items-center gap-2 text-white">
+              <Award className="w-5 h-5 animate-pulse" style={{ color: themeColor }} />
+              Celal Şengör Rütbe Yolculuğu
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="flex justify-between text-xs font-bold text-gray-400">
+                <span>{totalScore} Puan</span>
+                <span>Hedef: 2500 Puan</span>
               </div>
-            </CardContent>
-          </Card>
+              <Progress 
+                value={Math.min((totalScore / 2500) * 100, 100)} 
+                className="h-3 bg-slate-800" 
+                style={{ '--progress-foreground': themeColor } as any} 
+              />
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card className="border-border">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Kazanılan Rozet</p>
-                  <p className="text-2xl font-bold text-gold">{badges.length}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-gold/10 flex items-center justify-center">
-                  <Award className="w-6 h-6 text-gold" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Aktif Paket</p>
-                  <p className="text-2xl font-bold">{purchases.length}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-border">
-            <CardContent className="pt-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-muted-foreground">Konu Sayısı</p>
-                  <p className="text-2xl font-bold">{progress.length}</p>
-                </div>
-                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Target className="w-6 h-6 text-primary" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="progress" className="space-y-6">
-          <TabsList className="bg-background/50 border border-border">
-            <TabsTrigger value="progress">İlerleme</TabsTrigger>
+        <Tabs defaultValue="success" className="space-y-6">
+          <TabsList className="bg-background/50 border border-border text-white">
             <TabsTrigger value="success">Başarı Tablosu</TabsTrigger>
-            <TabsTrigger value="badges">Rozetler</TabsTrigger>
-            <TabsTrigger value="materials">Materyallerim</TabsTrigger>
           </TabsList>
-
-          {/* Progress Tab */}
-          <TabsContent value="progress" className="space-y-4">
-            {progress.length > 0 ? (
-              <div className="grid md:grid-cols-2 gap-4">
-                {progress.map((item) => (
-                  <Card key={item.id} className="border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex justify-between items-center mb-2">
-                        <div>
-                          <p className="font-medium">{item.topic}</p>
-                          <p className="text-sm text-muted-foreground">{item.category}</p>
-                        </div>
-                        <span className="text-sm font-bold text-primary">%{item.progress_value}</span>
-                      </div>
-                      <Progress value={item.progress_value} className="h-2" />
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="border-border">
-                <CardContent className="py-12 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                    <TrendingUp className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="font-medium mb-2">Henüz ilerleme kaydı yok</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Koçunuz çalışma ilerlemenizi buraya ekleyecek.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Başarı Tablosu Tab */}
-          <TabsContent value="success" className="animate-in fade-in duration-500">
-            <Card className="border-border bg-card/50 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle className="text-[#bc13fe] flex items-center gap-2">
-                  <Star className="w-5 h-5" />
-                  Pomodoro Başarı Sıralaması
-                </CardTitle>
-                <CardDescription>
-                  Tamamladığın oturumlar ve kazandığın toplam puanlar.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SuccessTable />
-              </CardContent>
+          <TabsContent value="success" className="space-y-6">
+            <Card className="bg-card/50 border-border">
+              <CardHeader><CardTitle className="text-white flex items-center gap-2"><TrendingUp className="w-5 h-5" style={{ color: themeColor }} /> Performans Analizi</CardTitle></CardHeader>
+              <CardContent><WeeklyChart isLegendary={isLegendary} /></CardContent>
             </Card>
-          </TabsContent>
-
-          {/* Badges Tab */}
-          <TabsContent value="badges" className="space-y-4">
-            {badges.length > 0 ? (
-              <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {badges.map((item) => (
-                  <Card key={item.id} className="border-border text-center">
-                    <CardContent className="pt-6">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gold/20 flex items-center justify-center text-3xl">
-                        {item.badge.icon}
-                      </div>
-                      <h3 className="font-semibold mb-1">{item.badge.name}</h3>
-                      <p className="text-xs text-muted-foreground">{item.badge.description}</p>
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(item.earned_at).toLocaleDateString('tr-TR')}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="border-border">
-                <CardContent className="py-12 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                    <Trophy className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="font-medium mb-2">Henüz rozet kazanmadınız</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Hedeflerinize ulaştıkça rozetler kazanacaksınız!
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-          </TabsContent>
-
-          {/* Materials Tab */}
-          <TabsContent value="materials" className="space-y-4">
-            {purchases.length > 0 ? (
-              <div className="grid md:grid-cols-2 gap-4">
-                {purchases.map((item) => (
-                  <Card key={item.id} className="border-border">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <Badge variant={item.package.package_type === 'coaching' ? 'default' : 'secondary'} className="mb-2">
-                            {item.package.package_type === 'coaching' ? 'Koçluk' : 'Materyal'}
-                          </Badge>
-                          <h3 className="font-medium">{item.package.name}</h3>
-                        </div>
-                        {item.package.package_type === 'material' && (
-                          <Button size="sm" variant="outline">
-                            <Download className="w-4 h-4 mr-2" />
-                            İndir
-                          </Button>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            ) : (
-              <Card className="border-border">
-                <CardContent className="py-12 text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-                    <BookOpen className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="font-medium mb-2">Henüz satın aldığınız paket yok</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Hizmetlerimizi keşfedin ve YKS yolculuğunuza başlayın.
-                  </p>
-                  <Button asChild className="bg-gradient-to-r from-primary to-purple-light">
-                    <Link to="/hizmetler">
-                      Hizmetleri Keşfet
-                      <ChevronRight className="ml-2 h-4 w-4" />
-                    </Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+            <Card className="bg-card/50 border-border"><CardContent className="pt-6"><SuccessTable /></CardContent></Card>
           </TabsContent>
         </Tabs>
       </div>
