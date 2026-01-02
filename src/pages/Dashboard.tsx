@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   BookOpen, Award, TrendingUp, Download, Settings, 
-  ChevronRight, Trophy, Target, Clock 
+  ChevronRight, Trophy, Target, Clock, Star 
 } from 'lucide-react';
 import Layout from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import SuccessTable from '@/components/SuccessTable';
 
 interface Profile {
   id: string;
@@ -72,7 +73,7 @@ const Dashboard = () => {
     if (!user) return;
 
     try {
-      // Fetch profile
+      // Profil verilerini çekme
       const { data: profileData } = await supabase
         .from('profiles')
         .select('*')
@@ -83,7 +84,7 @@ const Dashboard = () => {
         setProfile(profileData);
       }
 
-      // Fetch progress
+      // İlerleme verilerini çekme
       const { data: progressData } = await supabase
         .from('user_progress')
         .select('*')
@@ -93,7 +94,7 @@ const Dashboard = () => {
         setProgress(progressData);
       }
 
-      // Fetch badges with badge details
+      // Rozet verilerini çekme
       const { data: badgesData } = await supabase
         .from('user_badges')
         .select(`
@@ -112,7 +113,7 @@ const Dashboard = () => {
         setBadges(badgesData as unknown as UserBadge[]);
       }
 
-      // Fetch purchases
+      // Satın alımları çekme
       const { data: purchasesData } = await supabase
         .from('user_purchases')
         .select(`
@@ -153,9 +154,7 @@ const Dashboard = () => {
     );
   }
 
-  if (!user) {
-    return null;
-  }
+  if (!user) return null;
 
   return (
     <Layout>
@@ -230,8 +229,9 @@ const Dashboard = () => {
         </div>
 
         <Tabs defaultValue="progress" className="space-y-6">
-          <TabsList>
+          <TabsList className="bg-background/50 border border-border">
             <TabsTrigger value="progress">İlerleme</TabsTrigger>
+            <TabsTrigger value="success">Başarı Tablosu</TabsTrigger>
             <TabsTrigger value="badges">Rozetler</TabsTrigger>
             <TabsTrigger value="materials">Materyallerim</TabsTrigger>
           </TabsList>
@@ -268,6 +268,24 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Başarı Tablosu Tab */}
+          <TabsContent value="success" className="animate-in fade-in duration-500">
+            <Card className="border-border bg-card/50 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle className="text-[#bc13fe] flex items-center gap-2">
+                  <Star className="w-5 h-5" />
+                  Pomodoro Başarı Sıralaması
+                </CardTitle>
+                <CardDescription>
+                  Tamamladığın oturumlar ve kazandığın toplam puanlar.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SuccessTable />
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* Badges Tab */}

@@ -25,10 +25,21 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   </head>
 
   <body>
     <div id="root"></div>
+    
     <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      // Bu bilgiler React bileşenlerin tarafından da kullanılabilir
+      window.SUPABASE_CONFIG = {
+        url: 'https://uqtmuytvqmxdfqcokttb.supabase.co',
+        anonKey: 'sb_publishable_Km3lLU3hNYCSEic5cbRG1g_tvCS9xQ3'
+      };
+    </script>
   </body>
 </html>
