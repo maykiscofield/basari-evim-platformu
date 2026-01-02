@@ -1,3 +1,4 @@
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from '@vercel/analytics/react';
 import Pomodoro from "./pages/Pomodoro";
 import { Toaster } from "@/components/ui/toaster";
@@ -38,7 +39,8 @@ const App = () => (
             </Routes>
           </BrowserRouter>
           {/* Vercel Analytics buraya eklendi */}
-          <Analytics /> 
+          <Analytics />
+          <SpeedInsights /> 
         </CartProvider>
       </AuthProvider>
     </TooltipProvider>
