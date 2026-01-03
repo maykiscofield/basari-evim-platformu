@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Layout from '../components/layout/Layout';
-import { Play, Pause, RotateCcw, X, Trophy, Crown, Zap } from "lucide-react"; 
+import { Play, Pause, RotateCcw, X, Trophy, Crown, Zap, Music } from "lucide-react"; 
 import { Button } from '@/components/ui/button'; 
 import { supabase } from '@/integrations/supabase/client'; 
 import { toast } from "sonner"; 
@@ -17,10 +17,12 @@ const CELAL_SOZLERI = [
 
 const XP_LIMIT = 2500;
 const SESSION_XP = 25;
+const WORK_TIME = 25 * 60; 
+const BREAK_TIME = 5 * 60;  
 
 const Pomodoro = () => {
-  // --- State Yönetimi (Test için süreler 5sn olarak ayarlı) ---
-  const [timeLeft, setTimeLeft] = useState(5); 
+  // --- State Yönetimi ---
+  const [timeLeft, setTimeLeft] = useState(WORK_TIME); 
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
@@ -29,15 +31,26 @@ const Pomodoro = () => {
   const [rastgeleSoz, setRastgeleSoz] = useState("");
   const [isLegendary, setIsLegendary] = useState(false); 
   
+  // Spotify Dinamik State
+  const [spotifyConfig, setSpotifyConfig] = useState({
+    id: '7DaKTQA8ETlVUUKMRcSmK6',
+    type: 'playlist'
+  });
+
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const successAudioRef = useRef<HTMLAudioElement | null>(null);
-  const playlistId = '7DaKTQA8ETlVUUKMRcSmK6';
 
   // --- Başlangıç Ayarları ---
   useEffect(() => {
     successAudioRef.current = new Audio('/applepay.mp3');
+    
+    // Toplam çalışma süresini ve Kayıtlı Playlist'i getir
     const storedTotal = localStorage.getItem('totalWorkMinutes');
+    const storedSpotify = localStorage.getItem('savedSpotifyConfig');
+    
     if (storedTotal) setTotalWorkMinutes(parseInt(storedTotal));
+    if (storedSpotify) setSpotifyConfig(JSON.parse(storedSpotify));
+    
     yenileSoz();
   }, []);
 
@@ -45,6 +58,30 @@ const Pomodoro = () => {
     const randomIdx = Math.floor(Math.random() * CELAL_SOZLERI.length);
     setRastgeleSoz(CELAL_SOZLERI[randomIdx]);
   }, []);
+
+  // Spotify Link İşleyici (Playlist, Album, Track destekler)
+  const handleSpotifyLink = (input: string) => {
+    try {
+      // Örnek link: https://open.spotify.com/playlist/7DaKTQA8ETlVUUKMRcSmK6?si=...
+      const url = new URL(input);
+      const pathParts = url.pathname.split('/'); // ["", "playlist", "ID"]
+      
+      if (pathParts.length >= 3) {
+        const type = pathParts[1]; // playlist, track, album
+        const id = pathParts[2];
+        
+        const newConfig = { id, type };
+        setSpotifyConfig(newConfig);
+        localStorage.setItem('savedSpotifyConfig', JSON.stringify(newConfig));
+        toast.success("Müzik listesi güncellendi! İyi çalışmalar.");
+      }
+    } catch (e) {
+      // Eğer sadece ID yapıştırılırsa veya hatalı format ise
+      if (input.length > 15) {
+        toast.error("Lütfen geçerli bir Spotify linki yapıştırın.");
+      }
+    }
+  };
 
   // --- ŞATAFATLI NEON XP BİLDİRİMİ ---
   const showAdvancedXPToast = (puan: number, oldPercent: number, newPercent: number, legendary: boolean) => {
@@ -58,16 +95,13 @@ const Pomodoro = () => {
         shadow-[0_0_50px_-10px_${shadowColor},inset_0_0_20px_-5px_${shadowColor}]
         animate-in fade-in slide-in-from-right-10 hover:scale-[1.02]`}>
         
-        {/* Arka Plan Neon Efekti */}
         <div className={`absolute inset-0 opacity-20 bg-gradient-to-br ${mainColor} blur-3xl animate-pulse`} style={{ zIndex: -1 }}></div>
 
-        {/* Sol İkon Alanı */}
         <div className={`flex-shrink-0 p-4 rounded-full mr-6 bg-gradient-to-br ${mainColor} shadow-[0_0_30px_${shadowColor}] relative group`}>
           <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${mainColor} blur-md opacity-70 group-hover:opacity-100 transition-opacity`}></div>
           {legendary ? <Crown className="w-10 h-10 text-white relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" /> : <Trophy className="w-10 h-10 text-white relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />}
         </div>
         
-        {/* Orta İçerik Alanı */}
         <div className="flex-1 min-w-0 mr-4 relative z-10">
           <div className="flex items-center gap-2 mb-2">
             <Zap className={`w-5 h-5 ${textColor} animate-[spin_3s_linear_infinite] drop-shadow-[0_0_10px_${shadowColor}]`} />
@@ -83,27 +117,20 @@ const Pomodoro = () => {
             <span className={`font-black text-2xl ${textColor} drop-shadow-[0_0_5px_${shadowColor}]`}>XP</span>
           </div>
 
-          {/* Neon İlerleme Çubuğu */}
           <div className="relative h-4 mt-2 bg-black/60 rounded-full overflow-hidden border border-white/10 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
             <div 
               className={`absolute inset-y-0 left-0 transition-all duration-1000 ease-out bg-gradient-to-r ${mainColor} shadow-[0_0_25px_${shadowColor}]`} 
               style={{ width: `${newPercent}%` }} 
             />
-            {/* Çubuk Üzerindeki Parlama Efekti */}
             <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent opacity-50 rounded-full"></div>
-          </div>
-          <div className={`flex justify-between text-xs font-bold mt-2 px-1 ${textColor} drop-shadow-[0_0_5px_${shadowColor}]`}>
-            <span>%{oldPercent}</span>
-            <span>%{newPercent}</span>
           </div>
         </div>
         
-        {/* Kapatma Butonu */}
-        <button onClick={() => toast.dismiss(id)} className="absolute top-3 right-3 p-2 text-white/50 hover:text-white transition-all rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_${shadowColor}] z-20">
+        <button onClick={() => toast.dismiss(id)} className="absolute top-3 right-3 p-2 text-white/50 hover:text-white transition-all rounded-full z-20">
           <X size={24} />
         </button>
       </div>
-    ), { duration: 5000, position: 'bottom-right' }); // Süreyi 5 saniyeye düşürdüm
+    ), { duration: 5000, position: 'bottom-right' });
   };
 
   // --- Veritabanı İşlemleri ---
@@ -112,12 +139,12 @@ const Pomodoro = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data: sessions } = await supabase.from('pomodoro_sessions').select('score').eq('user_id', user.id);
+      const { data: sessions } = await (supabase as any).from('pomodoro_sessions').select('score').eq('user_id', user.id);
       const totalScoreOld = sessions?.reduce((sum: number, s: any) => sum + (s.score || 0), 0) || 0;
       
       const oldPercent = Math.floor((totalScoreOld / XP_LIMIT) * 100);
       
-      await supabase.from('pomodoro_sessions').insert([{ 
+      await (supabase as any).from('pomodoro_sessions').insert([{ 
         user_id: user.id, 
         first_name: user.user_metadata?.full_name?.split(" ")[0] || "Öğrenci", 
         score: SESSION_XP, 
@@ -162,7 +189,7 @@ const Pomodoro = () => {
       setIsActive(false);
       const nextIsBreak = !isBreak;
       setIsBreak(nextIsBreak);
-      setTimeLeft(5); // Test için 5 saniye
+      setTimeLeft(nextIsBreak ? BREAK_TIME : WORK_TIME); 
       yenileSoz();
     }
     
@@ -194,31 +221,31 @@ const Pomodoro = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             <StatCard label="Odaklanma" color="#bc13fe">
-               <div className="text-7xl font-black italic">
-                {Math.floor(totalWorkMinutes / 60)}<span className="text-2xl opacity-40 ml-1">sa</span> : {totalWorkMinutes % 60}<span className="text-2xl opacity-40 ml-1">dk</span>
-               </div>
+                <div className="text-7xl font-black italic">
+                 {Math.floor(totalWorkMinutes / 60)}<span className="text-2xl opacity-40 ml-1">sa</span> : {totalWorkMinutes % 60}<span className="text-2xl opacity-40 ml-1">dk</span>
+                </div>
             </StatCard>
 
             <StatCard label="Günlük Hedef" color="#60a5fa">
-               <div className="flex items-center justify-center">
-                <input 
-                  type="number" 
-                  value={targetMinutes} 
-                  onChange={(e) => setTargetMinutes(Math.max(1, parseInt(e.target.value) || 0))} 
-                  className="bg-transparent text-7xl font-black text-center w-40 outline-none border-b-2 border-white/10" 
-                />
-                <span className="text-3xl opacity-40 font-bold ml-2 mt-4">dk</span>
-              </div>
+                <div className="flex items-center justify-center">
+                 <input 
+                   type="number" 
+                   value={targetMinutes} 
+                   onChange={(e) => setTargetMinutes(Math.max(1, parseInt(e.target.value) || 0))} 
+                   className="bg-transparent text-7xl font-black text-center w-40 outline-none border-b-2 border-white/10" 
+                 />
+                 <span className="text-3xl opacity-40 font-bold ml-2 mt-4">dk</span>
+               </div>
             </StatCard>
 
             <StatCard label="Başarı Oranı" color="#f472b6">
-               <div className="text-7xl font-black mb-6">%{Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100)}</div>
-               <div className="w-full bg-white/5 h-5 rounded-full overflow-hidden">
-                <div 
-                  className="h-full transition-all duration-1000 bg-gradient-to-r from-[#bc13fe] to-pink-500 shadow-[0_0_20px_#bc13fe]" 
-                  style={{ width: `${Math.min((totalWorkMinutes/targetMinutes)*100, 100)}%` }} 
-                />
-              </div>
+                <div className="text-7xl font-black mb-6">%{Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100)}</div>
+                <div className="w-full bg-white/5 h-5 rounded-full overflow-hidden">
+                 <div 
+                   className="h-full transition-all duration-1000 bg-gradient-to-r from-[#bc13fe] to-pink-500 shadow-[0_0_20px_#bc13fe]" 
+                   style={{ width: `${Math.min((totalWorkMinutes/targetMinutes)*100, 100)}%` }} 
+                 />
+               </div>
             </StatCard>
           </div>
 
@@ -251,7 +278,7 @@ const Pomodoro = () => {
                   <Button 
                     onClick={() => { 
                       setIsActive(false); 
-                      setTimeLeft(5); // Test için 5 saniye
+                      setTimeLeft(isBreak ? BREAK_TIME : WORK_TIME); 
                     }} 
                     className="flex-1 py-16 rounded-[3rem] border-2 bg-white/5 hover:bg-white/10 text-[#bc13fe] border-[#bc13fe]/50"
                   >
@@ -262,10 +289,22 @@ const Pomodoro = () => {
             </div>
             
             <div className="flex flex-col gap-12">
-              <div className="bg-black/40 backdrop-blur-md rounded-[4rem] h-[550px] overflow-hidden border border-white/5 shadow-2xl">
+              <div className="bg-black/40 backdrop-blur-md rounded-[4rem] h-[550px] overflow-hidden border border-white/5 shadow-2xl flex flex-col p-6">
+                
+                {/* DİNAMİK PLAYLIST AYARI */}
+                <div className="flex items-center gap-3 bg-white/5 p-4 rounded-3xl mb-4 border border-white/10 focus-within:border-[#bc13fe] transition-all">
+                  <Music className="w-6 h-6 text-[#bc13fe]" />
+                  <input 
+                    type="text" 
+                    placeholder="Spotify Linkini Buraya Yapıştır..." 
+                    className="bg-transparent border-none outline-none text-white w-full text-lg placeholder:text-white/20"
+                    onChange={(e) => handleSpotifyLink(e.target.value)}
+                  />
+                </div>
+
                 <iframe 
-                  style={{ borderRadius: '24px' }}
-                  src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} 
+                  style={{ borderRadius: '32px' }}
+                  src={`https://open.spotify.com/embed/${spotifyConfig.type}/${spotifyConfig.id}?utm_source=generator&theme=0`} 
                   width="100%" 
                   height="100%" 
                   frameBorder="0" 

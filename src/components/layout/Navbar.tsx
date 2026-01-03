@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, ShoppingCart, User, Sun, Moon, LayoutDashboard, Timer } from 'lucide-react';
+import { Menu, X, ShoppingCart, User, Sun, Moon, LayoutDashboard } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useCart } from '@/hooks/useCart';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -57,8 +58,6 @@ const Navbar = () => {
     }
   };
 
-  // PANEL BURADA HER ZAMAN VAR:
-  // Giriş yapılmışsa /panel'e, yapılmamışsa /giris'e yönlendirir.
   const navLinks = [
     { href: '/', label: 'Ana Sayfa' },
     { href: '/hizmetler', label: 'Hizmetler' },
@@ -117,11 +116,11 @@ const Navbar = () => {
           <div className="hidden lg:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
-                key={link.label} // Key'i href yerine label yaptık çünkü href değişebiliyor
+                key={link.label}
                 to={link.href}
                 className={`relative group text-sm font-black tracking-[0.2em] uppercase transition-all duration-300
                   ${link.isSpecial 
-                    ? 'text-[#bc13fe] italic drop-shadow-[0_0_12px_rgba(188,19,254,0.7)] hover:text-white scale-110 ml-2' 
+                    ? 'text-[#bc13fe] italic drop-shadow-[0_0_12px_rgba(188,19,254,0.7)] hover:text-purple-700 dark:hover:text-white scale-110 ml-2' 
                     : 'text-slate-600 dark:text-slate-400 hover:text-primary dark:hover:text-white'
                   }`}
               >
@@ -139,54 +138,76 @@ const Navbar = () => {
 
           {/* Sağ Aksiyonlar */}
           <div className="flex items-center space-x-2 md:space-x-4">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={toggleTheme} 
-              className="rounded-2xl w-10 h-10 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-yellow-500 transition-all"
-            >
-              {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-
-            <Link to="/sepet" className="relative">
-              <Button variant="ghost" size="icon" className="rounded-2xl w-10 h-10 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400">
-                <ShoppingCart className="h-5 w-5" />
-                {totalItems > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center animate-pulse">
-                    {totalItems}
-                  </span>
-                )}
+            
+            {/* Tema Butonu */}
+            <motion.div whileHover={{ scale: 1.1, rotate: 15 }} whileTap={{ scale: 0.9 }}>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={toggleTheme} 
+                className="rounded-2xl w-10 h-10 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-yellow-500 hover:bg-yellow-500/10 dark:hover:bg-yellow-500/10 transition-colors shadow-sm hover:shadow-yellow-500/20"
+              >
+                {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
+            </motion.div>
+
+            {/* Sepet Butonu */}
+            <Link to="/sepet" className="relative">
+              <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                <Button variant="ghost" size="icon" className="rounded-2xl w-10 h-10 bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors shadow-sm hover:shadow-primary/20">
+                  <ShoppingCart className="h-5 w-5" />
+                  <AnimatePresence>
+                    {totalItems > 0 && (
+                      <motion.span 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0 }}
+                        className="absolute -top-1 -right-1 bg-primary text-white text-[9px] font-black rounded-full w-4 h-4 flex items-center justify-center shadow-[0_0_10px_rgba(168,85,247,0.5)]"
+                      >
+                        {totalItems}
+                      </motion.span>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </motion.div>
             </Link>
 
-            {/* Desktop Auth Section */}
             <div className="hidden md:flex items-center space-x-3">
               {!user ? (
                 <>
-                  <Button variant="outline" asChild className="h-10 border-primary/30 text-primary hover:bg-primary/5 text-xs font-black uppercase rounded-xl">
-                    <Link to="/giris">Giriş</Link>
-                  </Button>
-                  <Button asChild className="h-10 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-black text-xs uppercase rounded-xl shadow-lg shadow-purple-500/20">
-                    <Link to="/kayit">Kayıt</Link>
-                  </Button>
+                  <motion.div whileHover={{ y: -2 }} whileTap={{ y: 0 }}>
+                    <Button variant="outline" asChild className="h-10 border-primary/30 text-primary hover:bg-primary hover:text-white transition-all duration-300 text-xs font-black uppercase rounded-xl shadow-sm hover:shadow-primary/30">
+                      <Link to="/giris">Giriş</Link>
+                    </Button>
+                  </motion.div>
+
+                  <motion.div 
+                    whileHover={{ scale: 1.05, boxShadow: "0 0 20px rgba(168,85,247,0.4)" }} 
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <Button asChild className="h-10 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-black text-xs uppercase rounded-xl shadow-lg shadow-purple-500/20 border-0">
+                      <Link to="/kayit">Kayıt</Link>
+                    </Button>
+                  </motion.div>
                 </>
               ) : (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20 p-0 overflow-hidden">
-                      <User className="h-5 w-5 text-primary" />
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.1 }} className="cursor-pointer">
+                      <Button variant="ghost" className="h-10 w-10 rounded-full bg-primary/10 border border-primary/20 p-0 overflow-hidden shadow-sm">
+                        <User className="h-5 w-5 text-primary" />
+                      </Button>
+                    </motion.div>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56 bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10" align="end">
-                    <DropdownMenuItem onClick={() => navigate('/panel')} className="cursor-pointer">Panelim</DropdownMenuItem>
+                  <DropdownMenuContent className="w-56 bg-white dark:bg-slate-900 border-slate-200 dark:border-white/10 shadow-2xl" align="end">
+                    <DropdownMenuItem onClick={() => navigate('/panel')} className="cursor-pointer font-bold">Panelim</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={() => signOut()} className="text-red-500 cursor-pointer">Çıkış Yap</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => signOut()} className="text-red-500 cursor-pointer font-bold">Çıkış Yap</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               )}
             </div>
 
-            {/* Mobil Menü Butonu */}
             <Button
               variant="ghost"
               size="icon"
@@ -200,27 +221,34 @@ const Navbar = () => {
       </div>
 
       {/* Mobil Menü Paneli */}
-      {isOpen && (
-        <div className="lg:hidden absolute top-20 left-0 w-full bg-background border-b border-border p-6 animate-in slide-in-from-top duration-300">
-          <div className="flex flex-col space-y-4">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                to={link.href}
-                className={`text-lg font-bold transition-colors ${link.isSpecial ? 'text-[#bc13fe]' : 'text-slate-700 dark:text-slate-300'}`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            {!user && (
-              <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
-                <Button variant="outline" asChild className="w-full"><Link to="/giris">Giriş</Link></Button>
-                <Button asChild className="w-full bg-primary"><Link to="/kayit">Kayıt</Link></Button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="lg:hidden absolute top-20 left-0 w-full bg-background border-b border-border p-6 z-40 shadow-2xl"
+          >
+            <div className="flex flex-col space-y-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.label}
+                  to={link.href}
+                  className={`text-lg font-bold transition-colors ${link.isSpecial ? 'text-[#bc13fe]' : 'text-slate-700 dark:text-slate-300'}`}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              {!user && (
+                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+                  <Button variant="outline" asChild className="w-full rounded-xl"><Link to="/giris">Giriş</Link></Button>
+                  <Button asChild className="w-full bg-primary rounded-xl"><Link to="/kayit">Kayıt</Link></Button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };

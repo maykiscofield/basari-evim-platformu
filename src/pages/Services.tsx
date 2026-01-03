@@ -168,64 +168,81 @@ const Services = () => {
 
   return (
     <Layout>
-      {/* ARKA PLAN: 2. fotodaki aydınlık geçiş */}
-      <section className="py-20 bg-[#f4f4f5] dark:bg-slate-950 transition-colors duration-500">
-        <div className="container mx-auto px-4">
+      <section className="py-20 bg-[#f4f4f5] dark:bg-[#020617] transition-colors duration-500 min-h-screen relative overflow-hidden">
+        {/* HAFİF ARKA PLAN PARLAMALARI */}
+        <div className="absolute top-0 -left-20 w-96 h-96 bg-purple-600/5 blur-[120px] rounded-full" />
+        <div className="absolute bottom-0 -right-20 w-96 h-96 bg-blue-600/5 blur-[120px] rounded-full" />
+
+        <div className="container mx-auto px-4 relative z-10">
           
-          {/* BAŞLIK: 2. fotodaki belirginlik */}
+          {/* BAŞLIK ve AÇIKLAMA: NEON EFEKTLİ */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-6xl font-black mb-6 tracking-tighter">
-              <span className="text-slate-900 dark:text-white drop-shadow-sm">
+              <span className="bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(168,85,247,0.5)] dark:drop-shadow-[0_0_25px_rgba(59,130,246,0.5)]">
                 Hizmetlerimiz
               </span>
             </h1>
-            <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-xl font-medium italic">
-              "YKS başarınız için ihtiyacınız olan her şey burada. Zırvalamadan hedefe odaklanın."
+            <p className="max-w-2xl mx-auto text-xl font-medium italic">
+              <span className="bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent drop-shadow-[0_0_8px_rgba(59,130,246,0.4)] dark:drop-shadow-[0_0_12px_rgba(168,85,247,0.4)]">
+                "YKS maratonunda zırvalamaya yer yok. <span className="font-bold">Gerçek başarı</span> için yanınızdayız."
+              </span>
             </p>
           </div>
 
           <Tabs value={currentTab} onValueChange={(value) => setSearchParams({ type: value })} className="w-full">
-            <div className="flex justify-center mb-12">
-              <TabsList className="bg-slate-200/50 dark:bg-white/5 p-1 rounded-2xl h-auto">
-                <TabsTrigger value="all" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+            <div className="flex justify-center mb-16">
+              <TabsList className="bg-slate-200/50 dark:bg-white/5 p-1.5 rounded-2xl h-auto border border-slate-300/20 dark:border-white/10 backdrop-blur-sm shadow-sm">
+                
+                {/* TÜMÜ SEKME TETİKLEYİCİ */}
+                <TabsTrigger 
+                  value="all" 
+                  className="px-8 py-3 rounded-xl font-bold transition-all duration-300 active:scale-95 hover:scale-105 hover:text-cyan-500 dark:hover:text-cyan-400 hover:shadow-[0_0_20px_rgba(6,182,212,0.3)] data-[state=active]:bg-cyan-500 data-[state=active]:text-white data-[state=active]:shadow-md dark:data-[state=active]:shadow-cyan-500/20"
+                >
                   <Filter className="w-4 h-4 mr-2" /> Tümü
                 </TabsTrigger>
-                <TabsTrigger value="coaching" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+                
+                {/* KOÇLUK SEKME TETİKLEYİCİ */}
+                <TabsTrigger 
+                  value="coaching" 
+                  className="px-8 py-3 rounded-xl font-bold transition-all duration-300 active:scale-95 hover:scale-105 hover:text-violet-600 dark:hover:text-violet-400 hover:shadow-[0_0_20px_rgba(124,58,237,0.3)] data-[state=active]:bg-violet-600 data-[state=active]:text-white data-[state=active]:shadow-md dark:data-[state=active]:shadow-violet-600/20"
+                >
                   <Users className="w-4 h-4 mr-2" /> Koçluk
                 </TabsTrigger>
-                <TabsTrigger value="material" className="px-6 py-2.5 rounded-xl font-bold data-[state=active]:bg-white dark:data-[state=active]:bg-purple-600 data-[state=active]:shadow-md">
+                
+                {/* MATERYALLER SEKME TETİKLEYİCİ */}
+                <TabsTrigger 
+                  value="material" 
+                  className="px-8 py-3 rounded-xl font-bold transition-all duration-300 active:scale-95 hover:scale-105 hover:text-blue-600 dark:hover:text-blue-400 hover:shadow-[0_0_20px_rgba(37,99,235,0.3)] data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-md dark:data-[state=active]:shadow-blue-600/20"
+                >
                   <Download className="w-4 h-4 mr-2" /> Materyaller
                 </TabsTrigger>
               </TabsList>
             </div>
 
-            <TabsContent value={currentTab}>
+            <TabsContent value={currentTab} className="outline-none animate-in fade-in slide-in-from-bottom-4 duration-500">
               {loading ? (
                 <div className="flex justify-center py-20">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-primary"></div>
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-purple-500"></div>
                 </div>
               ) : (
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {filteredPackages.map((pkg) => (
-                    <Card key={pkg.id} className="group flex flex-col bg-white dark:bg-white/5 border-none rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.05)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:shadow-[0_30px_60px_rgba(0,0,0,0.1)] transition-all duration-500 hover:-translate-y-2 overflow-hidden">
-                      
+                    <Card 
+                      key={pkg.id} 
+                      className="group flex flex-col bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 rounded-[2.5rem] transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:hover:border-purple-500/20 overflow-hidden"
+                    >
                       <CardHeader className="p-8 pb-4">
                         <div className="flex flex-wrap items-center gap-2 mb-4">
-                          <Badge className={`${pkg.package_type === 'coaching' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} hover:bg-opacity-100 border-none font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider`}>
+                          <Badge className={`${pkg.package_type === 'coaching' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'} dark:bg-opacity-10 border-none font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider`}>
                             {pkg.package_type === 'coaching' ? 'Koçluk' : 'Materyal'}
                           </Badge>
-                          {pkg.is_subscription && (
-                            <Badge className="bg-amber-100 text-amber-600 border-none font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider">
-                              Abonelik
-                            </Badge>
-                          )}
                           {pkg.available_slots !== null && pkg.available_slots <= 5 && (
                             <Badge variant="destructive" className="font-black px-3 py-1 rounded-full text-[10px] uppercase tracking-wider animate-pulse">
                               Son {pkg.available_slots} Kontenjan
                             </Badge>
                           )}
                         </div>
-                        <CardTitle className="text-2xl font-black text-slate-800 dark:text-white group-hover:text-primary transition-colors tracking-tight">
+                        <CardTitle className="text-2xl font-black text-slate-800 dark:text-white transition-colors tracking-tight">
                           {pkg.name}
                         </CardTitle>
                         <CardDescription className="text-slate-500 dark:text-slate-400 font-medium text-base mt-2 line-clamp-2">
@@ -237,8 +254,8 @@ const Services = () => {
                         <ul className="space-y-4">
                           {pkg.features.map((feature, idx) => (
                             <li key={idx} className="flex items-center text-sm font-bold text-slate-600 dark:text-slate-300">
-                              <div className="bg-purple-100 dark:bg-purple-900/30 p-1 rounded-full mr-3 flex-shrink-0">
-                                <Check className="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                              <div className={`p-1 rounded-full mr-3 flex-shrink-0 ${pkg.package_type === 'coaching' ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-600' : 'bg-blue-100 dark:bg-blue-900/30 text-blue-600'}`}>
+                                <Check className="w-3.5 h-3.5 stroke-[3px]" />
                               </div>
                               {feature}
                             </li>
@@ -252,25 +269,20 @@ const Services = () => {
                             {formatPrice(pkg.price)}
                           </span>
                           {pkg.original_price && (
-                            <span className="text-lg text-slate-400 line-through font-bold">
+                            <span className="text-lg text-slate-400 line-through font-bold opacity-50">
                               {formatPrice(pkg.original_price)}
-                            </span>
-                          )}
-                          {pkg.is_subscription && (
-                            <span className="text-slate-500 font-bold text-sm">
-                              /{pkg.subscription_interval === 'monthly' ? 'ay' : 'yıl'}
                             </span>
                           )}
                         </div>
                         
                         <Button 
-                          className={`w-full py-7 rounded-2xl font-black text-lg transition-all shadow-lg ${
-                            isInCart(pkg.id) 
-                            ? 'bg-emerald-500 text-white hover:bg-emerald-600' 
-                            : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9] shadow-purple-500/20 hover:shadow-purple-500/40'
-                          }`}
                           onClick={() => handleAddToCart(pkg)}
                           disabled={isInCart(pkg.id)}
+                          className={`w-full py-7 rounded-2xl font-black text-lg transition-all active:scale-95 shadow-lg ${
+                            isInCart(pkg.id) 
+                            ? 'bg-emerald-500 text-white cursor-default' 
+                            : 'bg-[#7c3aed] text-white hover:bg-[#6d28d9] shadow-purple-500/20'
+                          }`}
                         >
                           {isInCart(pkg.id) ? (
                             <><Check className="w-6 h-6 mr-2 stroke-[3px]" /> Sepette</>

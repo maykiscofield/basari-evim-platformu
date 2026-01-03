@@ -1,92 +1,169 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, GraduationCap, Trophy } from 'lucide-react';
+import { ArrowRight, Check, Sparkles, GraduationCap, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-background transition-colors duration-500">
-      {/* Arka Plan Efektleri */}
-      <div className="absolute inset-0 bg-gradient-to-br from-purple-dark via-primary to-purple-light opacity-[0.03] dark:opacity-10" />
-      <div className="absolute top-20 right-0 w-96 h-96 bg-gold/10 dark:bg-gold/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-20 left-0 w-96 h-96 bg-primary/10 dark:bg-primary/20 rounded-full blur-3xl" />
-      
+    <section className="relative min-h-[95vh] flex items-center overflow-hidden bg-[#020617]">
+      {/* --- ARKA PLAN (Koyu ve Derin) --- */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,rgba(124,58,237,0.1),transparent)]" />
+      <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-primary/20 rounded-full blur-[140px] animate-pulse" />
+
       <div className="container mx-auto px-4 py-20 relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center px-4 py-2 bg-gold/10 border border-gold/30 rounded-full text-gold font-bold text-sm">
-              <Trophy className="w-4 h-4 mr-2" />
-              2025 Başarı Oranı: %94
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
+          
+          {/* SOL TARAF: İKNA EDİCİ METİNLER */}
+          <motion.div 
+            initial={{ opacity: 0, x: -40 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8 }}
+            className="space-y-10"
+          >
+            <div className="inline-flex items-center px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-400 font-bold text-sm shadow-[0_0_15px_rgba(16,185,129,0.1)]">
+              <ShieldCheck className="w-4 h-4 mr-2" />
+              <span>SINAV SÜRECİNDE UZMAN REHBERLİĞİ</span>
             </div>
             
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-slate-900 dark:text-white">
-              <span>YKS'de </span>
-              <span className="text-primary dark:text-purple-light inline-block drop-shadow-sm dark:drop-shadow-[0_20px_50px_rgba(124,58,237,0.45)]">
-                Başarıya
+            <h1 className="text-6xl md:text-8xl font-black tracking-tight leading-[0.95] text-white">
+              Hayallerini <br />
+              <span className="relative inline-block mt-2">
+                <span className="relative z-10 bg-gradient-to-r from-primary via-purple-400 to-indigo-400 bg-clip-text text-transparent">
+                  Şansa
+                </span>
+                <motion.span 
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ delay: 0.5, duration: 1 }}
+                  className="absolute bottom-2 left-0 h-4 bg-primary/20 -z-10 rounded-full blur-sm"
+                ></motion.span>
               </span>
               <br />
-              <span>Giden Yol</span>
+              Bırakma.
             </h1>
             
-            <p className="text-lg text-slate-600 dark:text-slate-400 max-w-xl font-medium leading-relaxed">
-              Deneyimli koçlarımız ve özel hazırlanmış materyallerimizle hayalinizdeki 
-              üniversiteye giden yolda yanınızdayız.
+            <p className="text-xl text-slate-400 max-w-lg font-medium leading-relaxed italic">
+              "YKS maratonunda tesadüflere yer yok. Profesyonel rehberlikle yolunu netleştir."
             </p>
             
-            {/* BUTONLAR: Modern, Neon ve Hata Arındırılmış */}
-            <div className="flex flex-col sm:flex-row gap-6">
-              <Button 
-                size="lg" 
-                asChild 
-                className="group relative h-20 bg-gradient-to-r from-primary to-purple-600 hover:from-purple-500 hover:to-blue-500 text-white text-xl px-12 rounded-2xl font-black transition-all duration-300 shadow-[0_0_30px_rgba(124,58,237,0.4)] hover:shadow-[0_0_60px_rgba(124,58,237,0.7)] border border-white/10 active:scale-95 overflow-hidden"
+            <div className="flex flex-col sm:flex-row gap-8">
+              <motion.div 
+                className="relative group"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <Link to="/hizmetler" className="flex items-center">
-                  Hizmetleri Keşfet
-                  <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-2 transition-transform duration-300 stroke-[3px]" />
-                </Link>
-              </Button>
-
-              <Button 
-                size="lg" 
-                variant="outline" 
-                asChild 
-                className="group relative h-20 border-2 border-purple-600 text-purple-700 bg-white hover:bg-purple-50 dark:border-purple-500/40 dark:text-purple-200 dark:bg-purple-500/5 dark:hover:bg-purple-500/10 dark:hover:text-white text-xl px-12 rounded-2xl font-black transition-all duration-300 shadow-xl dark:shadow-[0_0_20px_rgba(168,85,247,0.15)] dark:hover:shadow-[0_0_40px_rgba(168,85,247,0.4)] backdrop-blur-md active:scale-95"
-              >
-                <a 
-                  href="https://wa.me/905555555555" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center"
+                <div className="absolute -inset-1.5 bg-gradient-to-r from-primary to-purple-600 group-hover:from-blue-600 group-hover:to-indigo-600 rounded-2xl blur-2xl opacity-0 group-hover:opacity-100 transition duration-500" />
+                
+                <Button 
+                  size="lg" 
+                  asChild 
+                  className="relative h-16 bg-primary hover:bg-blue-600 text-white text-lg px-10 rounded-2xl font-bold shadow-[0_0_20px_rgba(124,58,237,0.5)] group-hover:shadow-[0_0_30px_rgba(37,99,235,0.6)] border border-white/20 overflow-hidden transition-all duration-300"
                 >
-                  Ücretsiz Danışmanlık
-                </a>
-              </Button>
+                  <Link to="/hizmetler" className="flex items-center">
+                    Hizmetleri Keşfet
+                    <ArrowRight className="ml-3 h-5 w-5 group-hover:translate-x-2 transition-transform" />
+                  </Link>
+                </Button>
+              </motion.div>
+
+              <motion.div 
+                className="relative group"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <div className="absolute -inset-1.5 bg-primary/40 rounded-2xl blur-2xl opacity-0 group-hover:opacity-70 transition duration-500" />
+                
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  asChild 
+                  className="relative h-16 border-2 border-primary/50 bg-transparent text-white text-lg px-10 rounded-2xl font-bold hover:bg-primary/10 hover:border-primary transition-all duration-300"
+                >
+                  <a href="https://wa.me/905555555555">Ücretsiz Danışmanlık</a>
+                </Button>
+              </motion.div>
             </div>
-            
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-6 pt-10 border-t border-slate-200 dark:border-white/10">
-              <div className="text-center">
-                <div className="text-3xl font-black text-primary">500+</div>
-                <div className="text-sm font-black text-slate-500 dark:text-slate-400 tracking-tighter uppercase">Öğrenci</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-black text-gold">15+</div>
-                <div className="text-sm font-black text-slate-500 dark:text-slate-400 tracking-tighter uppercase">Uzman Koç</div>
-              </div>
-              <div className="text-center">
-                <div className="text-3xl font-black text-primary">94%</div>
-                <div className="text-sm font-black text-slate-500 dark:text-slate-400 tracking-tighter uppercase">Başarı</div>
-              </div>
-            </div>
-          </div>
+          </motion.div>
           
-          <div className="relative hidden lg:block">
-            <div className="relative w-full aspect-square max-w-lg mx-auto group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary to-purple-dark rounded-[3.5rem] shadow-[0_30px_60px_rgba(0,0,0,0.1)] dark:shadow-2xl transform rotate-3 group-hover:rotate-0 transition-transform duration-700">
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <GraduationCap className="w-40 h-40 text-white/20" />
-                </div>
+          {/* SAĞ TARAF: KEP (GRADUATION CAP) EFEKTLİ ROZET KARTI */}
+          <div className="relative lg:block hidden">
+             <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1 }}
+              className="relative w-full aspect-square max-w-lg mx-auto"
+            >
+              {/* Konsantrik Halkalar */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                {[1, 0.8, 0.6].map((scale, i) => (
+                  <div 
+                    key={i}
+                    style={{ width: `${scale * 100}%`, height: `${scale * 100}%` }}
+                    className="absolute border border-white/10 rounded-full" 
+                  />
+                ))}
+                <motion.div 
+                   animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.3, 0.1] }}
+                   transition={{ duration: 4, repeat: Infinity }}
+                   className="absolute w-[40%] h-[40%] border border-primary/30 rounded-full bg-primary/10 blur-[1px]" 
+                />
               </div>
-            </div>
+
+              {/* Ana Kart */}
+              <motion.div 
+                animate={{ y: [0, -20, 0] }}
+                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute inset-0 bg-gradient-to-br from-purple-600/40 via-purple-800/30 to-slate-900/50 rounded-[5rem] border border-purple-500/30 backdrop-blur-3xl shadow-2xl overflow-hidden group"
+              >
+                <div className="absolute inset-0 flex items-center justify-center opacity-30">
+                  <GraduationCap className="w-48 h-48 text-white group-hover:scale-110 transition-transform duration-1000" />
+                </div>
+              </motion.div>
+
+              {/* GÖRÜNTÜLE VE PLANLA ROZETİ */}
+              <motion.div 
+                drag
+                dragConstraints={{ left: -30, right: 30, top: -30, bottom: 30 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95, rotate: -1 }}
+                className="absolute -bottom-10 -right-8 z-30 cursor-pointer"
+              >
+                <div className="relative p-[1px] rounded-[32px] bg-gradient-to-br from-primary to-transparent shadow-[0_0_30px_rgba(124,58,237,0.3)]">
+                  <div className="relative backdrop-blur-3xl bg-slate-900/95 p-8 rounded-[31px] min-w-[340px] border border-white/10">
+                    
+                    <div className="flex items-center gap-5 mb-8">
+                      <div className="w-16 h-16 bg-gradient-to-br from-primary to-purple-600 rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(124,58,237,0.5)]">
+                        <Check className="w-9 h-9 text-white" strokeWidth={3} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-emerald-400 text-[11px] font-black uppercase tracking-[2px] mb-1">
+                          ANINDA GERİ BİLDİRİM
+                        </span>
+                        <h3 className="text-white text-2xl font-bold tracking-tight">
+                          Başarı Stratejisi
+                        </h3>
+                        <p className="text-slate-400 text-sm font-medium">
+                          Sana özel günlük yol haritası.
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* YÖNLENDİRME EKLENDİ */}
+                    <Link to="/hizmetler" className="block w-full">
+                      <motion.button 
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        className="w-full py-4 bg-gradient-to-r from-primary to-purple-600 rounded-2xl text-white font-black text-sm tracking-widest shadow-xl transition-all flex items-center justify-center gap-2 group/btn relative overflow-hidden"
+                      >
+                        <span className="relative z-10 uppercase tracking-widest">Görüntüle ve Planla</span>
+                        <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-in-out" />
+                      </motion.button>
+                    </Link>
+                  </div>
+                </div>
+              </motion.div>
+
+            </motion.div>
           </div>
         </div>
       </div>
