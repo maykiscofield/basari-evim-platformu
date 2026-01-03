@@ -6,8 +6,21 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner"; 
 import confetti from 'canvas-confetti';
 
+// Sabitler
+const CELAL_SOZLERI = [
+  "Zırvalama, ders çalış!", 
+  "Bilgi güçtür, gerisi safsatadır.", 
+  "Senin cahilliğin benim yaşamımı etkiliyor!", 
+  "Okumayan adam cahil kalır!",
+  "Bak evladım, ders çalışmadan entelektüel olunmaz."
+];
+
+const XP_LIMIT = 2500;
+const SESSION_XP = 25;
+
 const Pomodoro = () => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); 
+  // --- State Yönetimi (Test için süreler 5sn olarak ayarlı) ---
+  const [timeLeft, setTimeLeft] = useState(5); 
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [totalWorkMinutes, setTotalWorkMinutes] = useState(0);
@@ -20,78 +33,120 @@ const Pomodoro = () => {
   const successAudioRef = useRef<HTMLAudioElement | null>(null);
   const playlistId = '7DaKTQA8ETlVUUKMRcSmK6';
 
-  const celalSozleri = [
-    "Zırvalama, ders çalış!", "Bilgi güçtür, gerisi safsatadır.", 
-    "Senin cahilliğin benim yaşamımı etkiliyor!", "Okumayan adam cahil kalır!"
-  ];
-
+  // --- Başlangıç Ayarları ---
   useEffect(() => {
     successAudioRef.current = new Audio('/applepay.mp3');
     const storedTotal = localStorage.getItem('totalWorkMinutes');
     if (storedTotal) setTotalWorkMinutes(parseInt(storedTotal));
-    setRastgeleSoz(celalSozleri[Math.floor(Math.random() * celalSozleri.length)]);
+    yenileSoz();
   }, []);
 
+  const yenileSoz = useCallback(() => {
+    const randomIdx = Math.floor(Math.random() * CELAL_SOZLERI.length);
+    setRastgeleSoz(CELAL_SOZLERI[randomIdx]);
+  }, []);
+
+  // --- ŞATAFATLI NEON XP BİLDİRİMİ ---
   const showAdvancedXPToast = (puan: number, oldPercent: number, newPercent: number, legendary: boolean) => {
-    toast.custom((t: any) => (
-      <div className={`relative group mb-10 mr-10 overflow-hidden bg-[#0a0f1e]/95 backdrop-blur-3xl border-[3px] p-2 rounded-[3.5rem] transition-all duration-700 max-w-[680px] w-full pointer-events-auto
-        ${legendary ? 'border-yellow-500 shadow-[0_0_80px_rgba(251,191,36,0.6)]' : 'border-[#bc13fe] shadow-[0_0_80px_rgba(188,19,254,0.6)]'}
-        ${t.visible ? 'animate-in fade-in slide-in-from-bottom-10' : 'animate-out fade-out'}`}>
-        <div className="relative z-10 p-10 flex items-center gap-12 text-left">
-          <div className="flex-shrink-0 relative">
-            <div className={`p-8 rounded-[2.5rem] relative z-10 shadow-2xl border-2 border-white/20 bg-gradient-to-br ${legendary ? 'from-yellow-400 via-amber-500 to-orange-600' : 'from-[#bc13fe] via-purple-500 to-blue-600'}`}>
-              {legendary ? <Crown className="w-16 h-16 text-white" /> : <Trophy className="w-16 h-16 text-white" />}
-            </div>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-4 mb-4">
-              <Zap className={`w-8 h-8 animate-pulse ${legendary ? 'text-yellow-400' : 'text-[#bc13fe]'}`} />
-              <h3 className="text-base font-black text-white italic tracking-[0.4em] uppercase">{legendary ? 'EFSANEVİ BAŞARI!' : 'İLERLEME KAYDEDİLDİ'}</h3>
-            </div>
-            <div className="flex items-center gap-10">
-              <span className={`text-[9rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b ${legendary ? 'from-yellow-300 to-amber-600' : 'from-white to-[#bc13fe]'}`}>
-                +{puan}
-              </span>
-              <div className="flex flex-col justify-center flex-1">
-                <span className="text-white font-black text-4xl italic leading-none mb-4">XP</span>
-                <div className="relative h-8 bg-black/60 rounded-full border-2 border-white/10 overflow-hidden min-w-[240px]">
-                  <div className={`absolute inset-y-0 left-0 transition-all duration-1000 ${legendary ? 'bg-gradient-to-r from-yellow-400 to-amber-600' : 'bg-gradient-to-r from-[#bc13fe] to-blue-600'}`} style={{ width: `${newPercent}%` }} />
-                  <div className="absolute inset-0 flex items-center justify-between px-4 text-xs font-black uppercase tracking-widest text-white z-10">
-                    <span>% {oldPercent}</span><span>→</span><span>% {newPercent}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <button onClick={() => toast.dismiss(t)} className="flex-shrink-0 self-start p-3 text-white/50 hover:text-white transition-all"><X size={32} /></button>
+    const mainColor = legendary ? 'from-yellow-400 via-amber-500 to-orange-600' : 'from-purple-500 via-[#bc13fe] to-blue-600';
+    const shadowColor = legendary ? 'rgba(251,191,36,0.8)' : 'rgba(188,19,254,0.8)';
+    const textColor = legendary ? 'text-yellow-400' : 'text-[#bc13fe]';
+
+    toast.custom((id) => (
+      <div className={`relative flex items-center p-6 rounded-3xl overflow-hidden transition-all duration-500 w-full max-w-lg
+        bg-[#0a0f1e]/80 backdrop-blur-2xl border-2 border-white/10
+        shadow-[0_0_50px_-10px_${shadowColor},inset_0_0_20px_-5px_${shadowColor}]
+        animate-in fade-in slide-in-from-right-10 hover:scale-[1.02]`}>
+        
+        {/* Arka Plan Neon Efekti */}
+        <div className={`absolute inset-0 opacity-20 bg-gradient-to-br ${mainColor} blur-3xl animate-pulse`} style={{ zIndex: -1 }}></div>
+
+        {/* Sol İkon Alanı */}
+        <div className={`flex-shrink-0 p-4 rounded-full mr-6 bg-gradient-to-br ${mainColor} shadow-[0_0_30px_${shadowColor}] relative group`}>
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${mainColor} blur-md opacity-70 group-hover:opacity-100 transition-opacity`}></div>
+          {legendary ? <Crown className="w-10 h-10 text-white relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" /> : <Trophy className="w-10 h-10 text-white relative z-10 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]" />}
         </div>
+        
+        {/* Orta İçerik Alanı */}
+        <div className="flex-1 min-w-0 mr-4 relative z-10">
+          <div className="flex items-center gap-2 mb-2">
+            <Zap className={`w-5 h-5 ${textColor} animate-[spin_3s_linear_infinite] drop-shadow-[0_0_10px_${shadowColor}]`} />
+            <h3 className={`text-lg font-black uppercase tracking-widest drop-shadow-[0_0_10px_${shadowColor}] ${textColor}`}>
+              {legendary ? 'EFSANEVİ BAŞARI!' : 'İLERLEME KAYDEDİLDİ'}
+            </h3>
+          </div>
+          
+          <div className="flex items-baseline gap-3 mb-3">
+            <span className={`text-5xl font-black leading-none text-transparent bg-clip-text bg-gradient-to-b ${mainColor} drop-shadow-[0_0_20px_${shadowColor}]`}>
+              +{puan}
+            </span>
+            <span className={`font-black text-2xl ${textColor} drop-shadow-[0_0_5px_${shadowColor}]`}>XP</span>
+          </div>
+
+          {/* Neon İlerleme Çubuğu */}
+          <div className="relative h-4 mt-2 bg-black/60 rounded-full overflow-hidden border border-white/10 shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+            <div 
+              className={`absolute inset-y-0 left-0 transition-all duration-1000 ease-out bg-gradient-to-r ${mainColor} shadow-[0_0_25px_${shadowColor}]`} 
+              style={{ width: `${newPercent}%` }} 
+            />
+            {/* Çubuk Üzerindeki Parlama Efekti */}
+            <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent opacity-50 rounded-full"></div>
+          </div>
+          <div className={`flex justify-between text-xs font-bold mt-2 px-1 ${textColor} drop-shadow-[0_0_5px_${shadowColor}]`}>
+            <span>%{oldPercent}</span>
+            <span>%{newPercent}</span>
+          </div>
+        </div>
+        
+        {/* Kapatma Butonu */}
+        <button onClick={() => toast.dismiss(id)} className="absolute top-3 right-3 p-2 text-white/50 hover:text-white transition-all rounded-full hover:bg-white/10 hover:shadow-[0_0_15px_${shadowColor}] z-20">
+          <X size={24} />
+        </button>
       </div>
-    ), { duration: 8000, position: 'bottom-right' });
+    ), { duration: 5000, position: 'bottom-right' }); // Süreyi 5 saniyeye düşürdüm
   };
 
+  // --- Veritabanı İşlemleri ---
   const saveSessionToSupabase = async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data: sessions } = await (supabase as any).from('pomodoro_sessions').select('score').eq('user_id', user.id);
-      const totalScoreOld = sessions?.reduce((sum: number, s: any) => sum + s.score, 0) || 0;
-      const oldPercent = Math.floor((totalScoreOld / 2500) * 100);
 
-      await (supabase as any).from('pomodoro_sessions').insert([{ 
-        user_id: user.id, first_name: user.user_metadata?.full_name?.split(" ")[0] || "Öğrenci", score: 25, status: 'Tamamlandı' 
+      const { data: sessions } = await supabase.from('pomodoro_sessions').select('score').eq('user_id', user.id);
+      const totalScoreOld = sessions?.reduce((sum: number, s: any) => sum + (s.score || 0), 0) || 0;
+      
+      const oldPercent = Math.floor((totalScoreOld / XP_LIMIT) * 100);
+      
+      await supabase.from('pomodoro_sessions').insert([{ 
+        user_id: user.id, 
+        first_name: user.user_metadata?.full_name?.split(" ")[0] || "Öğrenci", 
+        score: SESSION_XP, 
+        status: 'Tamamlandı' 
       }]);
 
-      const newPercent = Math.floor(((totalScoreOld + 25) / 2500) * 100);
-      const legendary = (totalScoreOld + 25) >= 2500;
+      const newScore = totalScoreOld + SESSION_XP;
+      const newPercent = Math.min(Math.floor((newScore / XP_LIMIT) * 100), 100);
+      const legendary = newScore >= XP_LIMIT;
+
       setIsLegendary(legendary);
-      showAdvancedXPToast(25, oldPercent, newPercent, legendary);
+      showAdvancedXPToast(SESSION_XP, oldPercent, newPercent, legendary);
+      
       successAudioRef.current?.play().catch(() => {});
-      confetti({ particleCount: 200, spread: 80, origin: { y: 0.6 }, colors: legendary ? ['#fbbf24', '#ffffff'] : ['#bc13fe', '#ffffff'] });
-    } catch (e) { console.error(e); }
+      confetti({ 
+        particleCount: 200, 
+        spread: 80, 
+        origin: { y: 0.6 }, 
+        colors: legendary ? ['#fbbf24', '#ffffff'] : ['#bc13fe', '#ffffff'] 
+      });
+    } catch (e) { 
+      console.error("Supabase Hatası:", e); 
+    }
   };
 
+  // --- Timer Döngüsü ---
   useEffect(() => {
-    let interval: any = null;
+    let interval: ReturnType<typeof setInterval>;
+    
     if (isActive && timeLeft > 0) {
       interval = setInterval(() => setTimeLeft((p) => p - 1), 1000);
     } else if (timeLeft === 0 && isActive) {
@@ -103,22 +158,24 @@ const Pomodoro = () => {
           return newVal;
         });
       }
+      
       setIsActive(false);
       const nextIsBreak = !isBreak;
       setIsBreak(nextIsBreak);
-      setTimeLeft(nextIsBreak ? 5 * 60 : 25 * 60);
-      setRastgeleSoz(celalSozleri[Math.floor(Math.random() * celalSozleri.length)]);
+      setTimeLeft(5); // Test için 5 saniye
+      yenileSoz();
     }
+    
     return () => clearInterval(interval);
-  }, [isActive, timeLeft, isBreak]);
+  }, [isActive, timeLeft, isBreak, yenileSoz]);
 
   const playZirva = useCallback(() => {
-    const audio = new Audio('/zirva.mp3');
     if (isZirvaPlaying && audioRef.current) {
       audioRef.current.pause();
       setIsZirvaPlaying(false);
       return;
     }
+    const audio = new Audio('/zirva.mp3');
     audioRef.current = audio;
     setIsZirvaPlaying(true);
     audio.play().catch(() => setIsZirvaPlaying(false));
@@ -128,63 +185,84 @@ const Pomodoro = () => {
   return (
     <Layout>
       <div className={`min-h-screen py-12 px-4 relative overflow-hidden transition-all duration-1000 ${isLegendary ? 'bg-[#0f0a00]' : 'bg-[#0f172a]'}`}>
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[150px] opacity-30 animate-pulse bg-[#bc13fe]"></div>
+        <div className={`absolute top-[-10%] right-[-10%] w-[600px] h-[600px] rounded-full blur-[150px] opacity-30 animate-pulse ${isLegendary ? 'bg-yellow-600' : 'bg-[#bc13fe]'}`}></div>
         
         <div className="max-w-7xl w-full mx-auto relative z-10 text-white text-center">
-          <h1 className="text-8xl font-black mb-16 italic uppercase tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">{isBreak ? 'MOLA' : 'ODAKLANMA'}</h1>
+          <h1 className="text-8xl font-black mb-16 italic uppercase tracking-tighter drop-shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+            {isBreak ? 'MOLA ZAMANI' : 'ODAKLANMA MODU'}
+          </h1>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[3rem] flex flex-col justify-center h-[250px] shadow-2xl">
-              <span className="text-[#bc13fe] text-xs font-black uppercase tracking-[0.5em] mb-4">Odaklanma</span>
-              <div className="text-7xl font-black italic">{Math.floor(totalWorkMinutes / 60)}<span className="text-2xl opacity-40 ml-1">sa</span> : {totalWorkMinutes % 60}<span className="text-2xl opacity-40 ml-1">dk</span></div>
-            </div>
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[3rem] flex flex-col justify-center h-[250px] shadow-2xl">
-              <span className="text-blue-400 text-xs font-black uppercase tracking-[0.5em] mb-4">Günlük Hedef</span>
-              <div className="flex items-center justify-center">
-                <input type="number" value={targetMinutes} onChange={(e) => setTargetMinutes(parseInt(e.target.value) || 0)} className="bg-transparent text-7xl font-black text-center w-40 outline-none border-b-2 border-white/10" />
+            <StatCard label="Odaklanma" color="#bc13fe">
+               <div className="text-7xl font-black italic">
+                {Math.floor(totalWorkMinutes / 60)}<span className="text-2xl opacity-40 ml-1">sa</span> : {totalWorkMinutes % 60}<span className="text-2xl opacity-40 ml-1">dk</span>
+               </div>
+            </StatCard>
+
+            <StatCard label="Günlük Hedef" color="#60a5fa">
+               <div className="flex items-center justify-center">
+                <input 
+                  type="number" 
+                  value={targetMinutes} 
+                  onChange={(e) => setTargetMinutes(Math.max(1, parseInt(e.target.value) || 0))} 
+                  className="bg-transparent text-7xl font-black text-center w-40 outline-none border-b-2 border-white/10" 
+                />
                 <span className="text-3xl opacity-40 font-bold ml-2 mt-4">dk</span>
               </div>
-            </div>
-            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[3rem] flex flex-col justify-center h-[250px] shadow-2xl">
-              <span className="text-pink-400 text-xs font-black uppercase tracking-[0.5em] mb-4">Başarı Oranı</span>
-              <div className="text-7xl font-black mb-6">%{Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100)}</div>
-              <div className="w-full bg-white/5 h-5 rounded-full overflow-hidden">
-                <div className="h-full transition-all duration-1000 bg-gradient-to-r from-[#bc13fe] to-pink-500 shadow-[0_0_20px_#bc13fe]" style={{ width: `${Math.min((totalWorkMinutes/targetMinutes)*100, 100)}%` }} />
+            </StatCard>
+
+            <StatCard label="Başarı Oranı" color="#f472b6">
+               <div className="text-7xl font-black mb-6">%{Math.min(Math.round((totalWorkMinutes / targetMinutes) * 100), 100)}</div>
+               <div className="w-full bg-white/5 h-5 rounded-full overflow-hidden">
+                <div 
+                  className="h-full transition-all duration-1000 bg-gradient-to-r from-[#bc13fe] to-pink-500 shadow-[0_0_20px_#bc13fe]" 
+                  style={{ width: `${Math.min((totalWorkMinutes/targetMinutes)*100, 100)}%` }} 
+                />
               </div>
-            </div>
+            </StatCard>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <div className="space-y-12 text-left">
-              <div className="bg-white/5 backdrop-blur-xl rounded-[4rem] p-1 border border-white/10 h-[600px] overflow-hidden shadow-2xl relative group">
+            <div className="flex flex-col gap-12">
+              <div className="bg-white/5 backdrop-blur-xl rounded-[4rem] p-1 border border-white/10 h-[550px] overflow-hidden shadow-2xl relative group">
                 <img 
                   src={isActive ? "/celal-hoca-gulen.jpg" : "/celal.jpg"} 
-                  alt="Celal" 
+                  alt="Celal Hoca" 
                   className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] opacity-80"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-12 text-center text-yellow-400 font-bold text-3xl italic leading-tight">"{rastgeleSoz}"</div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] via-transparent opacity-80"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-12 text-center text-yellow-400 font-bold text-3xl italic leading-tight drop-shadow-lg">
+                  "{rastgeleSoz}"
+                </div>
               </div>
 
-              <div className="bg-[#0f172a] rounded-[5rem] p-16 border border-white/5 shadow-2xl flex flex-col items-center">
+              <div className="bg-[#0f172a] rounded-[5rem] p-16 border border-white/5 shadow-2xl flex flex-col items-center flex-1 justify-center">
                 <div className="text-[14rem] font-mono font-black italic tracking-tighter leading-none mb-16 drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]">
                   {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
                 </div>
                 <div className="flex gap-8 w-full px-4">
-                  <Button onClick={() => setIsActive(!isActive)} className={`flex-[3] py-16 rounded-[3rem] font-black text-5xl uppercase bg-gradient-to-br from-[#bc13fe] to-[#8a2be2] text-white shadow-[0_0_50px_#bc13fe]`}>
+                  <Button 
+                    onClick={() => setIsActive(!isActive)} 
+                    className="flex-[3] py-16 rounded-[3rem] font-black text-5xl uppercase bg-gradient-to-br from-[#bc13fe] to-[#8a2be2] text-white shadow-[0_0_50px_rgba(188,19,254,0.4)] hover:scale-[1.02] transition-transform"
+                  >
                     {isActive ? <Pause size={56} className="mr-6" /> : <Play size={56} className="mr-6 fill-current" />}
                     {isActive ? 'DURAKLAT' : 'ODAKLAN'}
                   </Button>
-                  <Button onClick={() => {setIsActive(false); setTimeLeft(25*60);}} className="flex-1 py-16 rounded-[3rem] border-2 bg-white/5 hover:bg-white/10 text-[#bc13fe] border-[#bc13fe]/50">
+                  <Button 
+                    onClick={() => { 
+                      setIsActive(false); 
+                      setTimeLeft(5); // Test için 5 saniye
+                    }} 
+                    className="flex-1 py-16 rounded-[3rem] border-2 bg-white/5 hover:bg-white/10 text-[#bc13fe] border-[#bc13fe]/50"
+                  >
                     <RotateCcw size={56} />
                   </Button>
                 </div>
               </div>
             </div>
             
-            <div className="space-y-12">
-              <div className="bg-black/40 backdrop-blur-md rounded-[4rem] h-[600px] overflow-hidden border border-white/5 shadow-2xl">
-                {/* --- SPOTIFY EMBED DÜZELTİLDİ --- */}
+            <div className="flex flex-col gap-12">
+              <div className="bg-black/40 backdrop-blur-md rounded-[4rem] h-[550px] overflow-hidden border border-white/5 shadow-2xl">
                 <iframe 
                   style={{ borderRadius: '24px' }}
                   src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} 
@@ -195,12 +273,16 @@ const Pomodoro = () => {
                   loading="lazy"
                 ></iframe>
               </div>
-              <div className={`group relative h-[480px] p-[2px] rounded-[5rem] cursor-pointer transition-all active:scale-95 bg-gradient-to-br from-yellow-400 via-[#bc13fe] to-red-500 animate-pulse`} onClick={playZirva}>
+              
+              <div 
+                className={`group relative h-[550px] p-[2px] rounded-[5rem] cursor-pointer transition-all active:scale-95 bg-gradient-to-br from-yellow-400 via-[#bc13fe] to-red-500 ${isZirvaPlaying ? 'ring-4 ring-yellow-400 ring-offset-8 ring-offset-[#0f172a]' : 'animate-pulse'}`} 
+                onClick={playZirva}
+              >
                 <div className="h-full w-full bg-[#0f172a] rounded-[calc(5rem-2px)] flex flex-col items-center justify-center p-12 text-center relative z-10 overflow-hidden">
                   <span className="text-yellow-400 font-black text-base tracking-[0.6em] mb-8 uppercase">Günlük Doz</span>
                   <h2 className="text-8xl font-black italic tracking-tighter mb-12 text-white">ZIRVALAMA!</h2>
-                  <div className={`p-12 rounded-full shadow-3xl bg-white/5 border border-white/10 group-hover:bg-[#bc13fe]`}>
-                    <Play size={72} fill="white" className="ml-3" />
+                  <div className={`p-12 rounded-full shadow-3xl transition-all duration-300 ${isZirvaPlaying ? 'bg-[#bc13fe] scale-110 shadow-[0_0_50px_#bc13fe]' : 'bg-white/5 border border-white/10 group-hover:bg-[#bc13fe]'}`}>
+                    {isZirvaPlaying ? <Pause size={72} fill="white" /> : <Play size={72} fill="white" className="ml-3" />}
                   </div>
                 </div>
               </div>
@@ -211,5 +293,12 @@ const Pomodoro = () => {
     </Layout>
   );
 };
+
+const StatCard = ({ label, children, color }: { label: string, children: React.ReactNode, color: string }) => (
+  <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-10 rounded-[3rem] flex flex-col justify-center h-[250px] shadow-2xl">
+    <span className="text-xs font-black uppercase tracking-[0.5em] mb-4" style={{ color }}>{label}</span>
+    {children}
+  </div>
+);
 
 export default Pomodoro;

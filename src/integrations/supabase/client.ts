@@ -1,16 +1,15 @@
-import { createClient } from '@supabase/supabase-js'
-import type { Database } from './types'
+import { createClient } from '@supabase/supabase-js';
 
-// Değişkenleri alırken tırnaklardan veya boşluklardan arındıralım
+// .env değişkenlerini temizle
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim();
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
 
-// Eğer değerler yoksa boş string yerine uyarı verelim
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("Vercel'den anahtarlar çekilemedi!");
+  console.warn("Dikkat: Supabase anahtarları eksik. Vercel ayarlarını kontrol et!");
 }
 
-export const supabase = createClient<Database>(
+// 'any' kullanımı Database tipi henüz oluşturulmamışsa hataları durdurur
+export const supabase = createClient<any>(
   supabaseUrl || "", 
   supabaseAnonKey || ""
-)
+);
