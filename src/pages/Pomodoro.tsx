@@ -1,12 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import Layout from '../components/layout/Layout';
-import { Play, Pause, RotateCcw, X, TrendingUp, Trophy, Crown, Zap } from "lucide-react"; 
+import { Play, Pause, RotateCcw, X, TrendingUp, Trophy, Crown, Zap, Star } from "lucide-react"; 
 import { Button } from '@/components/ui/button'; 
 import { supabase } from '@/integrations/supabase/client'; 
 import { toast } from "sonner"; 
 import confetti from 'canvas-confetti';
 
 const Pomodoro = () => {
+  // --- SÜRE 25 DAKİKA OLARAK SABİTLENDİ ---
   const [timeLeft, setTimeLeft] = useState(25 * 60); 
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -29,32 +30,26 @@ const Pomodoro = () => {
     successAudioRef.current = new Audio('/applepay.mp3');
     const storedTotal = localStorage.getItem('totalWorkMinutes');
     if (storedTotal) setTotalWorkMinutes(parseInt(storedTotal));
+    // İlk sözü ayarla
+    setRastgeleSoz(celalSozleri[Math.floor(Math.random() * celalSozleri.length)]);
   }, []);
 
-  // --- ULTRA MODERN NEON BİLDİRİM (TAMAMEN YENİLENDİ) ---
   const showAdvancedXPToast = (puan: number, oldPercent: number, newPercent: number, legendary: boolean) => {
     toast.custom((t: any) => (
       <div className={`relative group overflow-hidden bg-[#0a0f1e]/95 backdrop-blur-3xl border-[3px] p-1.5 rounded-[3rem] transition-all duration-700 max-w-[600px] w-full pointer-events-auto
         ${legendary
-          ? 'border-yellow-500/80 shadow-[0_0_80px_rgba(251,191,36,0.5),_inset_0_0_30px_rgba(251,191,36,0.2)]'
-          : 'border-[#bc13fe]/80 shadow-[0_0_80px_rgba(188,19,254,0.5),_inset_0_0_30px_rgba(188,19,254,0.2)]'
+          ? 'border-yellow-500/80 shadow-[0_0_80px_rgba(251,191,36,0.5)]'
+          : 'border-[#bc13fe]/80 shadow-[0_0_80px_rgba(188,19,254,0.5)]'
         }
         ${t.visible ? 'animate-in fade-in slide-in-from-bottom-10 zoom-in-95' : 'animate-out fade-out zoom-out-95 duration-500'}`}>
         
-        {/* Hareketli Arka Plan Işıkları */}
-        <div className={`absolute -top-20 -left-20 w-60 h-60 rounded-full blur-[120px] opacity-40 animate-pulse ${legendary ? 'bg-yellow-600' : 'bg-[#bc13fe]'}`}></div>
-        <div className={`absolute -bottom-20 -right-20 w-60 h-60 rounded-full blur-[120px] opacity-40 animate-pulse ${legendary ? 'bg-orange-600' : 'bg-blue-600'}`}></div>
-
         <div className="relative z-10 p-8 flex items-center gap-10 text-left">
-          {/* Sol: Dev İkon Alanı */}
           <div className="flex-shrink-0 relative">
-            <div className={`absolute inset-0 blur-3xl opacity-70 animate-pulse ${legendary ? 'bg-yellow-500' : 'bg-[#bc13fe]'}`}></div>
-            <div className={`p-6 rounded-[2rem] relative z-10 shadow-2xl border-2 border-white/20 bg-gradient-to-br ${legendary ? 'from-yellow-400 via-amber-500 to-orange-600' : 'from-[#bc13fe] via-purple-500 to-blue-600'}`}>
-              {legendary ? <Crown className="w-14 h-14 text-white drop-shadow-lg" /> : <Trophy className="w-14 h-14 text-white drop-shadow-lg" />}
+            <div className={`p-6 rounded-[2rem] relative z-10 shadow-2xl border-2 border-white/20 bg-gradient-to-br ${legendary ? 'from-yellow-400 to-orange-600' : 'from-[#bc13fe] to-blue-600'}`}>
+              {legendary ? <Crown className="w-14 h-14 text-white" /> : <Trophy className="w-14 h-14 text-white" />}
             </div>
           </div>
 
-          {/* Sağ: Devasa XP ve İlerleme */}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-3">
               <Zap className={`w-6 h-6 animate-pulse ${legendary ? 'text-yellow-400' : 'text-[#bc13fe]'}`} />
@@ -64,20 +59,17 @@ const Pomodoro = () => {
             </div>
             
             <div className="flex items-center gap-8">
-              {/* DEVASA XP SAYISI */}
               <span className={`text-8xl font-black whitespace-nowrap leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b 
-                ${legendary ? 'from-yellow-300 to-amber-600 drop-shadow-[0_0_30px_#fbbf24]' : 'from-white to-[#bc13fe] drop-shadow-[0_0_30px_#bc13fe]'}`}>
+                ${legendary ? 'from-yellow-300 to-amber-600' : 'from-white to-[#bc13fe]'}`}>
                 +{puan}
               </span>
               
               <div className="flex flex-col justify-center flex-1">
                 <span className="text-white font-black text-3xl italic leading-none mb-3">XP</span>
-                {/* RÜTBE İLERLEME ÇUBUĞU */}
                 <div className="relative h-6 bg-black/50 rounded-full border border-white/10 overflow-hidden shadow-inner min-w-[180px]">
                   <div className={`absolute inset-y-0 left-0 transition-all duration-1000 ease-out
                     ${legendary ? 'bg-gradient-to-r from-yellow-400 to-amber-600' : 'bg-gradient-to-r from-[#bc13fe] to-blue-600'}`}
                     style={{ width: `${newPercent}%` }}>
-                    <div className="absolute inset-0 bg-white/20 animate-shine"></div>
                   </div>
                   <div className="absolute inset-0 flex items-center justify-between px-3 text-[10px] font-black uppercase tracking-widest text-white z-10">
                     <span>% {oldPercent}</span>
@@ -101,6 +93,7 @@ const Pomodoro = () => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      
       const { data: sessions } = await (supabase as any).from('pomodoro_sessions').select('score').eq('user_id', user.id);
       const totalScoreOld = sessions?.reduce((sum: number, s: any) => sum + s.score, 0) || 0;
       const oldPercent = Math.floor((totalScoreOld / 2500) * 100);
@@ -112,6 +105,7 @@ const Pomodoro = () => {
       const newPercent = Math.floor(((totalScoreOld + 25) / 2500) * 100);
       const legendary = (totalScoreOld + 25) >= 2500;
       setIsLegendary(legendary);
+      
       showAdvancedXPToast(25, oldPercent, newPercent, legendary);
       successAudioRef.current?.play().catch(() => {});
       confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 }, colors: legendary ? ['#fbbf24', '#f59e0b', '#ffffff'] : ['#bc13fe', '#00d4ff', '#ffffff'] });
@@ -135,6 +129,7 @@ const Pomodoro = () => {
       const nextIsBreak = !isBreak;
       setIsBreak(nextIsBreak);
       setTimeLeft(nextIsBreak ? 5 * 60 : 25 * 60);
+      setRastgeleSoz(celalSozleri[Math.floor(Math.random() * celalSozleri.length)]);
     }
     return () => clearInterval(interval);
   }, [isActive, timeLeft, isBreak]);
@@ -187,8 +182,9 @@ const Pomodoro = () => {
               <div className="bg-white/5 backdrop-blur-xl rounded-[3.5rem] p-1 border border-white/10 h-[550px] overflow-hidden shadow-2xl relative group">
                 <img src="/celal.jpg" alt="Celal" className="w-full h-full object-cover transition-transform group-hover:scale-110" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0f172a] opacity-80"></div>
-                <div className="absolute bottom-0 left-0 right-0 p-10 text-center text-yellow-400 font-bold text-2xl italic leading-tight">"Bilgi güçtür, gerisi safsatadır."</div>
+                <div className="absolute bottom-0 left-0 right-0 p-10 text-center text-yellow-400 font-bold text-2xl italic leading-tight">"{rastgeleSoz}"</div>
               </div>
+
               <div className="bg-[#0f172a] rounded-[4.5rem] p-12 border border-white/5 shadow-2xl flex flex-col items-center">
                 <div className="text-[12rem] font-mono font-black italic tracking-tighter leading-none mb-12 drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
                   {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
@@ -201,6 +197,7 @@ const Pomodoro = () => {
                       {isActive ? 'DURAKLAT' : 'ODAKLAN'}
                     </div>
                   </Button>
+                  {/* --- RESET BUTONU 25 DAKİKA OLARAK DÜZELTİLDİ --- */}
                   <Button onClick={() => {setIsActive(false); setTimeLeft(25*60);}} className={`flex-1 py-14 rounded-[2.5rem] border-2 bg-white/5 hover:bg-white/10 group/reset ${isLegendary ? 'border-yellow-500/50 text-yellow-500' : 'border-[#bc13fe]/50 text-[#bc13fe]'}`}>
                     <RotateCcw size={44} className="group-hover/reset:-rotate-90 transition-transform duration-500" />
                   </Button>
@@ -210,12 +207,21 @@ const Pomodoro = () => {
             
             <div className="space-y-10">
               <div className="bg-black/40 backdrop-blur-md rounded-[3.5rem] h-[550px] overflow-hidden border border-white/5 shadow-2xl">
-                <iframe src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                {/* --- SPOTIFY EMBED URL DÜZELTİLDİ (HTTPS) --- */}
+                <iframe 
+                  src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} 
+                  width="100%" 
+                  height="100%" 
+                  frameBorder="0" 
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                  loading="lazy"
+                ></iframe>
               </div>
+              
               <div className={`group relative h-[450px] p-[2px] rounded-[4rem] cursor-pointer transition-all active:scale-95 ${isLegendary ? 'bg-yellow-500 shadow-yellow-500/50' : 'bg-gradient-to-br from-yellow-400 via-[#bc13fe] to-red-500 animate-pulse'}`} onClick={playZirva}>
                 <div className="h-full w-full bg-[#0f172a] rounded-[calc(4rem-2px)] flex flex-col items-center justify-center p-12 text-center relative z-10 overflow-hidden">
                   <span className="text-yellow-400 font-black text-sm tracking-[0.5em] mb-6 uppercase">Günlük Doz</span>
-                  <h2 className="text-7xl font-black italic tracking-tighter mb-10">ZIRVALAMA!</h2>
+                  <h2 className="text-7xl font-black italic tracking-tighter mb-10 text-white">ZIRVALAMA!</h2>
                   <div className={`p-10 rounded-full transition-all duration-500 shadow-2xl bg-white/5 border border-white/10 ${isLegendary ? 'group-hover:bg-yellow-500 group-hover:text-black' : 'group-hover:bg-[#bc13fe]'}`}>
                     <Play size={64} fill="white" className="ml-2" />
                   </div>
