@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>YKS Koçluk | Hayalinizdeki Üniversiteye Giden Yol</title>
 
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self'; 
+      script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://*.vercel-analytics.com; 
+      connect-src 'self' https://uqtmuytvqmxdfqcokttb.supabase.co wss://uqtmuytvqmxdfqcokttb.supabase.co; 
+      frame-src 'self' https://open.spotify.com; 
+      img-src 'self' data: https://*.supabase.co;
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+    ">
+
     <link rel="icon" type="image/png" href="/logo.png" />
     <link rel="apple-touch-icon" href="/logo.png" />
     
@@ -35,7 +45,6 @@
     <script type="module" src="/src/main.tsx"></script>
 
     <script>
-      // Bu bilgiler React bileşenlerin tarafından da kullanılabilir
       window.SUPABASE_CONFIG = {
         url: 'https://uqtmuytvqmxdfqcokttb.supabase.co',
         anonKey: 'sb_publishable_Km3lLU3hNYCSEic5cbRG1g_tvCS9xQ3'

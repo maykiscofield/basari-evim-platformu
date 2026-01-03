@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import confetti from 'canvas-confetti';
 
 const Pomodoro = () => {
-  // --- SÜRE 25 DAKİKA OLARAK SABİTLENDİ ---
   const [timeLeft, setTimeLeft] = useState(25 * 60); 
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -38,25 +37,21 @@ const Pomodoro = () => {
       <div className={`relative group mb-10 mr-10 overflow-hidden bg-[#0a0f1e]/95 backdrop-blur-3xl border-[3px] p-2 rounded-[3.5rem] transition-all duration-700 max-w-[680px] w-full pointer-events-auto
         ${legendary ? 'border-yellow-500 shadow-[0_0_80px_rgba(251,191,36,0.6)]' : 'border-[#bc13fe] shadow-[0_0_80px_rgba(188,19,254,0.6)]'}
         ${t.visible ? 'animate-in fade-in slide-in-from-bottom-10' : 'animate-out fade-out'}`}>
-        
         <div className="relative z-10 p-10 flex items-center gap-12 text-left">
           <div className="flex-shrink-0 relative">
             <div className={`p-8 rounded-[2.5rem] relative z-10 shadow-2xl border-2 border-white/20 bg-gradient-to-br ${legendary ? 'from-yellow-400 via-amber-500 to-orange-600' : 'from-[#bc13fe] via-purple-500 to-blue-600'}`}>
               {legendary ? <Crown className="w-16 h-16 text-white" /> : <Trophy className="w-16 h-16 text-white" />}
             </div>
           </div>
-
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-4 mb-4">
               <Zap className={`w-8 h-8 animate-pulse ${legendary ? 'text-yellow-400' : 'text-[#bc13fe]'}`} />
               <h3 className="text-base font-black text-white italic tracking-[0.4em] uppercase">{legendary ? 'EFSANEVİ BAŞARI!' : 'İLERLEME KAYDEDİLDİ'}</h3>
             </div>
-            
             <div className="flex items-center gap-10">
               <span className={`text-[9rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b ${legendary ? 'from-yellow-300 to-amber-600' : 'from-white to-[#bc13fe]'}`}>
                 +{puan}
               </span>
-              
               <div className="flex flex-col justify-center flex-1">
                 <span className="text-white font-black text-4xl italic leading-none mb-4">XP</span>
                 <div className="relative h-8 bg-black/60 rounded-full border-2 border-white/10 overflow-hidden min-w-[240px]">
@@ -161,7 +156,6 @@ const Pomodoro = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-12 text-left">
-              {/* --- FOTOĞRAF DEĞİŞİM ALANI --- */}
               <div className="bg-white/5 backdrop-blur-xl rounded-[4rem] p-1 border border-white/10 h-[600px] overflow-hidden shadow-2xl relative group">
                 <img 
                   src={isActive ? "/celal-hoca-gulen.jpg" : "/celal.jpg"} 
@@ -190,10 +184,15 @@ const Pomodoro = () => {
             
             <div className="space-y-12">
               <div className="bg-black/40 backdrop-blur-md rounded-[4rem] h-[600px] overflow-hidden border border-white/5 shadow-2xl">
-                {/* --- SPOTIFY EMBED HTTPS FIX --- */}
+                {/* --- SPOTIFY EMBED DÜZELTİLDİ --- */}
                 <iframe 
+                  style={{ borderRadius: '24px' }}
                   src={`https://open.spotify.com/embed/playlist/${playlistId}?utm_source=generator&theme=0`} 
-                  width="100%" height="100%" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"
+                  width="100%" 
+                  height="100%" 
+                  frameBorder="0" 
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                  loading="lazy"
                 ></iframe>
               </div>
               <div className={`group relative h-[480px] p-[2px] rounded-[5rem] cursor-pointer transition-all active:scale-95 bg-gradient-to-br from-yellow-400 via-[#bc13fe] to-red-500 animate-pulse`} onClick={playZirva}>
